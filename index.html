@@ -14,14 +14,13 @@
     
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; }
+        :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; --warning: #ffaa00; }
         
         body, html { 
             margin: 0; padding: 0; background: var(--bg); color: #fff; 
             font-family: 'Roboto', sans-serif; height: 100vh; width: 100vw; overflow: hidden; 
         }
 
-        /* EKRANI */
         .screen {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; position: absolute; top: 0; left: 0;
@@ -29,7 +28,6 @@
         }
         .hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
-        /* POČETNI EKRAN */
         .logo { font-family: 'Orbitron'; font-size: 32px; font-weight: 900; letter-spacing: 3px; margin-bottom: 50px; text-align: center; }
 
         .btn {
@@ -37,46 +35,40 @@
             border-radius: 15px; font-family: 'Orbitron'; font-size: 14px;
             font-weight: 900; cursor: pointer; text-transform: uppercase; border: none;
         }
-        .btn-primary { background: var(--accent); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.2); }
+        .btn-primary { background: var(--accent); color: #000; }
         .btn-outline { background: transparent; color: #fff; border: 2px solid #222; }
 
-        /* LOADER I POVEZIVANJE (CENTRALNO) */
+        /* LOADER */
         #connect-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.95); display: none; z-index: 2000;
             align-items: center; justify-content: center; text-align: center;
         }
-
-        .loader-box { display: flex; flex-direction: column; align-items: center; }
         .loader {
             width: 70px; height: 70px; border: 6px solid #111; border-top: 6px solid var(--accent);
             border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* LISTA ADAPTERA */
-        #adapter-list {
-            width: 90%; max-width: 400px; background: #0a0a0a; border: 1px solid #222;
-            border-radius: 20px; padding: 20px; display: none;
+        /* STATUS BAR ZA SIMULACIJU */
+        #sim-indicator {
+            display: none; position: fixed; top: 10px; right: 10px;
+            background: var(--warning); color: #000; padding: 5px 12px;
+            border-radius: 20px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900;
+            animation: pulse 1.5s infinite; z-index: 3000;
         }
-        .adapter-item {
-            padding: 20px; border-bottom: 1px solid #111; display: flex;
-            justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold;
-        }
-        .status-dot { width: 10px; height: 10px; background: var(--safe); border-radius: 50%; box-shadow: 0 0 10px var(--safe); }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* PANEL SA PODACIMA */
+        /* DATA SCREEN */
         #data-screen { background: #000; justify-content: flex-start; padding-top: 60px; overflow-y: auto; }
-        
         .card {
             width: 100%; background: #0c0c0c; border: 2px solid #1a1a1a;
             border-radius: 20px; padding: 25px; margin-bottom: 15px;
             display: flex; justify-content: space-between; align-items: center;
         }
-        
-        .card-label { font-size: 14px; font-weight: 900; color: #fff; text-transform: uppercase; margin-bottom: 5px; }
+        .card-label { font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
         .card-val { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; color: #fff; line-height: 1; }
-        .card-unit { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; color: #fff; margin-left: 10px; }
+        .card-unit { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; margin-left: 10px; }
 
         .card.safe { border-left: 10px solid var(--safe); }
         .card.danger { border-color: var(--danger); background: #1a0000; border-left: 10px solid var(--danger); }
@@ -85,23 +77,19 @@
 </head>
 <body>
 
+    <div id="sim-indicator">SIMULACIJA</div>
+
     <div class="screen" id="main-screen">
         <div class="logo">DAX CAR SCAN</div>
-        <button class="btn btn-primary" onclick="traziAdaptere()">POVEŽI ADAPTER</button>
-        <button class="btn btn-outline" onclick="startSim()">SIMULACIJA</button>
+        <button class="btn btn-primary" onclick="pokreniPraviBluetooth()">POVEŽI ADAPTER</button>
+        <button class="btn btn-outline" onclick="startSim(true)">SIMULACIJA</button>
     </div>
 
     <div id="connect-overlay">
-        <div class="loader-box" id="loading-state">
+        <div style="display: flex; flex-direction: column; align-items: center;">
             <div class="loader"></div>
-            <p style="font-family: 'Orbitron'; letter-spacing: 3px; font-size: 12px;">TRAŽIM ADAPTERE...</p>
-        </div>
-
-        <div id="adapter-list">
-            <h3 style="font-family: 'Orbitron'; font-size: 14px; color: var(--accent); margin-bottom: 20px;">PRONAĐENI UREĐAJI:</h3>
-            <div class="adapter-item" onclick="odaberi('OBDII PRO')"><span>OBDII PRO LINK</span> <div class="status-dot"></div></div>
-            <div class="adapter-item" onclick="odaberi('vLINKER')"><span>vLINKER MC+</span> <div class="status-dot"></div></div>
-            <button class="btn btn-outline" onclick="otkazi()" style="margin-top:20px;">NAZAD</button>
+            <p id="status-text" style="font-family: 'Orbitron'; letter-spacing: 3px; font-size: 12px;">TRAŽIM ADAPTER...</p>
+            <button class="btn btn-outline" onclick="otkazi()" style="width: 200px; margin-top: 20px;">PREKINI</button>
         </div>
     </div>
 
@@ -112,7 +100,7 @@
             <div>
                 <div class="card-label">Akumulator</div>
                 <div style="display:flex; align-items:baseline;">
-                    <span id="aku-val" class="card-val">14.2</span>
+                    <span id="aku-val" class="card-val">0.0</span>
                     <span class="card-unit">V</span>
                 </div>
             </div>
@@ -122,35 +110,46 @@
             <div>
                 <div class="card-label">Obrtaji Motora</div>
                 <div style="display:flex; align-items:baseline;">
-                    <span id="rpm-val" class="card-val">850</span>
+                    <span id="rpm-val" class="card-val">0</span>
                     <span class="card-unit">RPM</span>
                 </div>
             </div>
         </div>
 
-        <button class="btn btn-outline" style="border-color: #111; color: #333; margin-top: 30px;" onclick="ugasiSim()">ZAUSTAVI</button>
+        <button class="btn btn-outline" style="border-color: #111; color: #444; margin-top: 30px;" onclick="ugasiSve()">ZAUSTAVI</button>
     </div>
 
     <script>
         let simLoop;
 
-        function traziAdaptere() {
-            document.getElementById('connect-overlay').style.display = 'flex';
-            document.getElementById('loading-state').style.display = 'flex';
-            document.getElementById('adapter-list').style.display = 'none';
+        // PRAVO BLUETOOTH POVEZIVANJE
+        async function pokreniPraviBluetooth() {
+            try {
+                // Pokušaj otvaranja sistemskog Bluetooth prozora
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ namePrefix: 'OBD' }, { namePrefix: 'ELM' }],
+                    optionalServices: ['00001101-0000-1000-8000-00805f9b34fb']
+                });
 
-            setTimeout(() => {
-                document.getElementById('loading-state').style.display = 'none';
-                document.getElementById('adapter-list').style.display = 'block';
-            }, 2500);
+                document.getElementById('status-text').innerText = "POVEZIVANJE...";
+                // Ovde bi išla logika za povezivanje sa servisom...
+                setTimeout(() => { startSim(false); otkazi(); }, 1500);
+
+            } catch (error) {
+                // Ako korisnik otkaže ili ne nađe ništa
+                alert("Adapter nije pronađen ili je traženje otkazano.");
+                otkazi();
+            }
         }
 
         function otkazi() { document.getElementById('connect-overlay').style.display = 'none'; }
-        function odaberi(ime) { alert("Povezano sa " + ime); otkazi(); startSim(); }
 
-        function startSim() {
+        function startSim(isSimulation) {
             document.getElementById('main-screen').classList.add('hidden');
             document.getElementById('data-screen').classList.remove('hidden');
+            
+            // Prikaži ili sakrij žuti indikator simulacije
+            document.getElementById('sim-indicator').style.display = isSimulation ? 'block' : 'none';
             
             simLoop = setInterval(() => {
                 let v = (Math.random() * 3 + 11.8).toFixed(1);
@@ -164,10 +163,11 @@
             }, 1000);
         }
 
-        function ugasiSim() {
+        function ugasiSve() {
             clearInterval(simLoop);
             document.getElementById('main-screen').classList.remove('hidden');
             document.getElementById('data-screen').classList.add('hidden');
+            document.getElementById('sim-indicator').style.display = 'none';
         }
     </script>
 </body>
