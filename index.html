@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json?v=2.4">
-    <title>DCS PRO v37</title>
+    <link rel="manifest" href="manifest.json?v=2.5">
+    <title>DCS PRO v38</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -39,7 +39,6 @@
         .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 75px 15px 40px 15px; }
         .scroll-area { flex-grow: 1; overflow-y: auto; padding-bottom: 30px; width: 100%; }
 
-        /* KARTICE */
         .card { 
             width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; 
             padding: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; 
@@ -58,22 +57,19 @@
         .card.danger .card-val { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
         .card.danger .wave { background: linear-gradient(90deg, rgba(255, 17, 17, 0.4), transparent); animation: wave-move 1s infinite linear; }
 
-        /* GRESKE */
         .err-item { background: #0a0000; border: 1px solid #311; padding: 20px; border-radius: 20px; margin-bottom: 12px; width: 100%; text-align: left; border-left: 5px solid var(--danger); }
         .err-code { font-family: 'Orbitron'; color: var(--danger); font-size: 18px; margin-bottom: 5px; font-weight: 900; }
         .err-desc { font-size: 11px; color: #fff; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; display: block; }
         .err-fix { font-size: 10px; color: #666; font-style: italic; line-height: 1.4; font-weight: 700; }
 
-        /* SETTINGS */
-        .settings-item { background: #0a0a0a; padding: 20px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #111; }
-        .settings-item span { font-family: 'Orbitron'; font-size: 12px; font-weight: 900; color: #fff; }
-        .check-box { width: 25px; height: 25px; border-radius: 5px; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; position: relative; }
-        .check-box.active { background: var(--accent); }
-        .check-box.active::after { content: '✓'; color: #000; font-weight: 900; font-size: 16px; }
-
-        /* RADAR & MODAL */
         #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); display: none; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
         .modal-box { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 400px; padding: 30px; text-align: center; }
+
+        .settings-item { background: #0a0a0a; padding: 20px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #111; }
+        .settings-item span { font-family: 'Orbitron'; font-size: 12px; font-weight: 900; color: #fff; }
+        .check-box { width: 25px; height: 25px; border-radius: 5px; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; }
+        .check-box.active { background: var(--accent); }
+        .check-box.active::after { content: '✓'; color: #000; font-weight: 900; }
 
         .radar-box { position: relative; margin-top: 100px; height: 150px; display: flex; align-items: center; justify-content: center; }
         .radar-circle { position: absolute; width: 100px; height: 100px; border: 1px solid #111; border-radius: 50%; animation: radar-pulse 3s infinite linear; }
@@ -140,7 +136,7 @@
     <script>
         let tsX = 0, currentView = 0;
         const sensorDb = [
-            { id: 'aku', label: 'Akumulator', unit: 'V', min: 13.2, max: 14.8, n: '13.8V-14.4V', f: 'Alternator ne puni ili regler vara.', active: true },
+            { id: 'aku', label: 'Akumulator', unit: 'V', min: 13.2, max: 14.8, n: '13.8V - 14.4V', f: 'Alternator ne puni ili regler vara.', active: true },
             { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', min: 700, max: 3500, n: 'Ler: 750-850', f: 'Problem sa diznama ili usisom.', active: true },
             { id: 'temp', label: 'Temp. Motora', unit: '°C', min: 80, max: 102, n: '90°C', f: 'Termostat ili manjak antifriza.', active: true },
             { id: 'dpf', label: 'DPF Filter', unit: '%', min: 0, max: 45, n: '<40%', f: 'Filter zasićen čađi.', active: true },
@@ -153,9 +149,10 @@
         ];
 
         const faultsDb = [
-            { code: 'P0101', desc: 'MAF Senzor - Signal van opsega', fix: 'Očistiti protokomer vazduha.' },
-            { code: 'P0420', desc: 'Efikasnost katalizatora niska', fix: 'Proveriti lambda sondu ili katalizator.' },
-            { code: 'P0670', desc: 'Relej grejača - kvar', fix: 'Proveriti grejače i modul grejača.' }
+            { code: 'P0101', desc: 'MAF Senzor - Signal van opsega', fix: 'Očistiti protokomer ili proveriti vakuum creva.' },
+            { code: 'P2463', desc: 'DPF Filter - Visoko zasićenje čađi', fix: 'Izvesti regeneraciju vožnjom na otvorenom putu.' },
+            { code: 'P0420', desc: 'Katalitički sistem - efikasnost niska', fix: 'Proveriti lambda sonde ili stanje katalizatora.' },
+            { code: 'P0380', desc: 'Grejači motora - kvar kola A', fix: 'Proveriti ispravnost grejača i releja grejača.' }
         ];
 
         function hTS(e) { tsX = e.touches[0].clientX; }
@@ -170,13 +167,15 @@
         }
 
         async function handleConnect() {
-            document.getElementById('bt-loader').style.display = 'flex';
+            const loader = document.getElementById('bt-loader');
+            loader.style.display = 'flex';
             try {
                 await navigator.bluetooth.requestDevice({ filters: [{ namePrefix: 'OBD' }, { namePrefix: 'ELM' }] });
+                loader.style.display = 'none';
                 document.getElementById('status-tag').innerText = "ONLINE";
                 document.getElementById('status-tag').style.color = "var(--safe)";
                 launch(false);
-            } catch (e) {} finally { document.getElementById('bt-loader').style.display = 'none'; }
+            } catch (e) { loader.style.display = 'none'; }
         }
 
         function launch(isSim) {
@@ -184,8 +183,8 @@
             renderDashboard();
             renderSettings();
             if(isSim) {
-                document.getElementById('vin-val').innerText = "WVGZZZ_SIM";
-                setInterval(updateValues, 1000);
+                document.getElementById('vin-val').innerText = "SIM_MODE_v38";
+                setInterval(updateData, 1000);
             }
         }
 
@@ -194,12 +193,7 @@
             list.innerHTML = sensorDb.filter(s => s.active).map(s => `
                 <div id="card-${s.id}" class="card safe" onclick="showPopup('${s.id}')">
                     <div class="wave"></div>
-                    <div>
-                        <div class="card-label">${s.label}</div>
-                        <div style="display:flex;align-items:baseline;">
-                            <span id="${s.id}-val" class="card-val">0</span><span class="card-unit">${s.unit}</span>
-                        </div>
-                    </div>
+                    <div><div class="card-label">${s.label}</div><div style="display:flex;align-items:baseline;"><span id="${s.id}-val" class="card-val">0</span><span class="card-unit">${s.unit}</span></div></div>
                 </div>
             `).join('');
         }
@@ -221,14 +215,16 @@
             renderSettings();
         }
 
-        function updateValues() {
+        function updateData() {
             sensorDb.forEach(s => {
                 if(!s.active) return;
                 let v = s.id === 'aku' ? (Math.random() * 2.5 + 12.0).toFixed(1) : Math.floor(Math.random() * (s.max * 1.1));
                 const el = document.getElementById(s.id + '-val');
-                const card = document.getElementById('card-' + s.id);
-                if(el) el.innerText = v;
-                if(card) card.className = (v < s.min || v > s.max) ? 'card danger' : 'card safe';
+                if(el) {
+                    el.innerText = v;
+                    const card = document.getElementById('card-' + s.id);
+                    card.className = (v < s.min || v > s.max) ? 'card danger' : 'card safe';
+                }
             });
         }
 
@@ -243,20 +239,41 @@
         function runScan() {
             const out = document.getElementById('diag-target');
             const btn = document.getElementById('scan-btn');
-            if(btn.innerText.includes("Skeniraj")) {
-                out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div></center>";
-                setTimeout(() => {
-                    out.innerHTML = faultsDb.map(f => `<div class="err-item"><div class="err-code">${f.code}</div><span class="err-desc">${f.desc}</span><div class="err-fix">${f.fix}</div></div>`).join('');
-                    btn.innerText = "Obriši sve greške"; btn.style.background = "red";
-                }, 1500);
-            } else {
-                out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; font-size:12px; margin-top:120px; animation: glow-pulse 1s infinite alternate;'>SISTEM OČIŠĆEN</p></center>";
-                btn.style.display = "none";
-                setTimeout(() => {
-                    out.innerHTML = `<div class="radar-box"><div class="radar-circle"></div><p style="color:#222; font-family:Orbitron; font-size:10px;">ECU MONITOR</p></div>`;
-                    btn.innerText = "Skeniraj vozilo"; btn.style.background = "var(--accent)"; btn.style.display = "block";
-                }, 2500);
-            }
+            
+            // RESET NA LOADING STANJE
+            out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px; color:var(--accent);'>KOMUNIKACIJA SA ECU...</p></center>";
+            
+            setTimeout(() => {
+                // PRIKAZ GRESAKA
+                out.innerHTML = faultsDb.map(f => `
+                    <div class="err-item">
+                        <div class="err-code">${f.code}</div>
+                        <span class="err-desc">${f.desc}</span>
+                        <div class="err-fix">${f.fix}</div>
+                    </div>
+                `).join('');
+                
+                // PROMENA DUGMETA U OBRIŠI
+                btn.innerText = "Obriši sve greške";
+                btn.style.background = "var(--danger)";
+                btn.onclick = runErase;
+            }, 2000);
+        }
+
+        function runErase() {
+            const out = document.getElementById('diag-target');
+            const btn = document.getElementById('scan-btn');
+            
+            out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; font-size:12px; margin-top:120px; animation: glow-pulse 1s infinite alternate;'>SISTEM OČIŠĆEN</p></center>";
+            btn.style.display = "none";
+            
+            setTimeout(() => {
+                out.innerHTML = `<div class="radar-box"><div class="radar-circle"></div><p style="color:#222; font-family:Orbitron; font-size:10px;">ECU MONITOR</p></div>`;
+                btn.innerText = "Skeniraj vozilo";
+                btn.style.background = "var(--accent)";
+                btn.style.display = "block";
+                btn.onclick = runScan;
+            }, 3000);
         }
     </script>
 </body>
