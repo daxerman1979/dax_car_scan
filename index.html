@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json?v=1.7">
-    <title>DCS PRO v32</title>
+    <link rel="manifest" href="manifest.json?v=1.8">
+    <title>DCS PRO v33</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -36,8 +36,8 @@
         .btn-outline { background: transparent; color: #fff; border: 1px solid #222; }
 
         #view-slider { display: flex; width: 200vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
-        .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; padding: 70px 15px 30px 15px; }
-        .scroll-area { flex-grow: 1; overflow-y: auto; padding-bottom: 80px; width: 100%; }
+        .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 70px 15px 30px 15px; }
+        .scroll-area { flex-grow: 1; overflow-y: auto; padding-bottom: 20px; width: 100%; }
 
         .card { 
             width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; 
@@ -57,12 +57,17 @@
         .card.danger .card-val { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
         .card.danger .wave { background: linear-gradient(90deg, rgba(255, 17, 17, 0.4), transparent); animation: wave-move 1s infinite linear; }
 
+        /* GRESKE DIZAJN */
+        .err-item { background: #0a0000; border: 1px solid #311; padding: 20px; border-radius: 20px; margin-bottom: 12px; width: 100%; text-align: left; }
+        .err-code { font-family: 'Orbitron'; color: var(--danger); font-size: 18px; margin-bottom: 5px; }
+        .err-desc { font-size: 11px; color: #fff; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .err-fix { font-size: 10px; color: #666; font-style: italic; line-height: 1.4; }
+
         #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); display: none; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
         .modal-box { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 400px; padding: 30px; text-align: center; }
 
         .nav-hint { position: fixed; bottom: 15px; width: 100%; text-align: center; font-family: 'Orbitron'; font-size: 8px; color: #222; letter-spacing: 2px; }
 
-        /* BT LOADER */
         #bt-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
         .spin { width: 45px; height: 45px; border: 4px solid #111; border-top: 4px solid var(--accent); border-radius: 50%; animation: rot 1s linear infinite; }
         @keyframes rot { to { transform: rotate(360deg); } }
@@ -93,9 +98,9 @@
         </div>
         <div class="page">
             <div class="scroll-area" id="diag-target">
-                <center><p style="color:#222; font-family:Orbitron; margin-top:100px;">SISTEM SPREMAN</p></center>
+                <center><p style="color:#222; font-family:Orbitron; margin-top:100px; text-transform:uppercase; letter-spacing:2px;">Sistem spreman</p></center>
             </div>
-            <button class="btn btn-primary" id="scan-btn" onclick="runScan()" style="margin-bottom: 30px;">SKENIRAJ VOZILO</button>
+            <button class="btn btn-primary" id="scan-btn" onclick="runScan()" style="margin-bottom: 20px;">Skeniraj vozilo</button>
             <div class="nav-hint">KLIZNI DESNO ZA MERENJA</div>
         </div>
     </div>
@@ -130,6 +135,14 @@
             { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', min: 2, max: 150, n: '3-5 Ler', f: 'Zaprljan protokomer.' }
         ];
 
+        const faultsDb = [
+            { code: 'P0101', desc: 'Senzor protoka vazduha (MAF)', fix: 'Očistiti senzor ili proveriti vakuum creva.' },
+            { code: 'P0340', desc: 'Senzor bregaste osovine', fix: 'Proveriti električni konektor ili zameniti senzor.' },
+            { code: 'P0420', desc: 'Efikasnost katalizatora niska', fix: 'Moguće začepljenje katalizatora ili kvar lambda sonde.' },
+            { code: 'P0670', desc: 'Grejač motora - kvar kola', fix: 'Proveriti relej grejača ili same grejače.' },
+            { code: 'P2463', desc: 'DPF Filter - Prezasicenost', fix: 'Pokrenuti regeneraciju u vožnji ili servisno čišćenje.' }
+        ];
+
         function hTS(e) { tsX = e.touches[0].clientX; }
         function hTM(e) {
             let diff = tsX - e.touches[0].clientX;
@@ -146,15 +159,13 @@
                 const device = await navigator.bluetooth.requestDevice({
                     filters: [{ namePrefix: 'OBD' }, { namePrefix: 'ELM' }, { services: ['00001101-0000-1000-8000-00805f9b34fb'] }]
                 });
-                // Ako je uređaj izabran, nastavi u app
                 loader.style.display = 'none';
                 document.getElementById('status-tag').innerText = "CONNECTED";
                 document.getElementById('status-tag').style.color = "var(--safe)";
                 launch(false);
             } catch (e) {
-                // Ako korisnik otkaže ili nema BT podrške, ostani na startu
                 loader.style.display = 'none';
-                console.log("Konekcija otkazana.");
+                console.log("Otkazano.");
             }
         }
 
@@ -193,13 +204,19 @@
             const out = document.getElementById('diag-target');
             const btn = document.getElementById('scan-btn');
             if(btn.innerText.includes("SKENIRAJ")) {
-                out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px; color:var(--accent);'>SKENIRANJE...</p></center>";
+                out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px; color:var(--accent); letter-spacing:2px;'>SKENIRANJE PROTOKOLA...</p></center>";
                 setTimeout(() => {
-                    out.innerHTML = Array(6).fill(0).map((_, i) => `<div class="err-item"><div class="err-code">P042${i}</div><div class="err-desc">Greška na senzoru sistema ${i+1}</div></div>`).join('');
-                    btn.innerText = "OBRIŠI GREŠKE"; btn.style.background = "red";
+                    out.innerHTML = faultsDb.map(f => `
+                        <div class="err-item">
+                            <div class="err-code">${f.code}</div>
+                            <span class="err-desc">${f.desc}</span>
+                            <div class="err-fix">${f.fix}</div>
+                        </div>
+                    `).join('');
+                    btn.innerText = "OBRIŠI SVE GREŠKE"; btn.style.background = "red";
                 }, 2000);
             } else {
-                out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; margin-top:100px;'>SISTEM ČIST</p></center>";
+                out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; margin-top:100px; letter-spacing:2px;'>GREŠKE OBRISANE</p></center>";
                 btn.innerText = "SKENIRAJ VOZILO"; btn.style.background = "var(--accent)";
             }
         }
