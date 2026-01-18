@@ -3,114 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
+    
     <title>DAX CAR SCAN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
+    
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; }
+        
         body, html { 
-            margin: 0; padding: 0; background: #000; color: #fff; 
-            font-family: 'Segoe UI', Roboto, sans-serif; height: 100vh; overflow: hidden; 
+            margin: 0; padding: 0; background: var(--bg); color: #fff; 
+            font-family: 'Roboto', sans-serif; height: 100vh; width: 100vw; overflow: hidden; 
         }
 
-        /* Glavni kontejner */
-        .app-container {
+        /* EKRANI */
+        .screen {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; padding: 20px; text-align: center;
+            height: 100vh; width: 100vw; position: absolute; top: 0; left: 0;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px;
         }
+        .hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
-        .logo { font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900; letter-spacing: 3px; margin-bottom: 50px; color: #fff; }
+        /* POČETNI EKRAN */
+        .logo { font-family: 'Orbitron'; font-size: 32px; font-weight: 900; letter-spacing: 3px; margin-bottom: 50px; text-align: center; }
 
         .btn {
-            width: 100%; max-width: 300px; padding: 20px; margin: 10px 0;
-            border-radius: 15px; font-family: 'Orbitron', sans-serif; font-size: 14px;
-            font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase;
+            width: 100%; max-width: 320px; padding: 22px; margin: 10px 0;
+            border-radius: 15px; font-family: 'Orbitron'; font-size: 14px;
+            font-weight: 900; cursor: pointer; text-transform: uppercase; border: none;
         }
-        .btn-primary { background: #00d2ff; color: #000; border: none; box-shadow: 0 0 20px rgba(0, 210, 255, 0.3); }
-        .btn-outline { background: transparent; color: #666; border: 2px solid #333; }
+        .btn-primary { background: var(--accent); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.2); }
+        .btn-outline { background: transparent; color: #fff; border: 2px solid #222; }
 
-        /* Overlay za povezivanje */
+        /* LOADER I POVEZIVANJE (CENTRALNO) */
         #connect-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); display: none; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.95); display: none; z-index: 2000;
+            align-items: center; justify-content: center; text-align: center;
         }
 
+        .loader-box { display: flex; flex-direction: column; align-items: center; }
         .loader {
-            width: 60px; height: 60px; border: 5px solid #222; border-top: 5px solid #00d2ff;
-            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
+            width: 70px; height: 70px; border: 6px solid #111; border-top: 6px solid var(--accent);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Lista adaptera */
+        /* LISTA ADAPTERA */
         #adapter-list {
-            width: 90%; max-width: 400px; background: #111; border-radius: 20px;
-            padding: 20px; display: none; border: 1px solid #222;
+            width: 90%; max-width: 400px; background: #0a0a0a; border: 1px solid #222;
+            border-radius: 20px; padding: 20px; display: none;
         }
         .adapter-item {
-            padding: 15px; border-bottom: 1px solid #222; display: flex;
-            justify-content: space-between; align-items: center; cursor: pointer;
+            padding: 20px; border-bottom: 1px solid #111; display: flex;
+            justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold;
         }
-        .adapter-item:last-child { border: none; }
-        .status-dot { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
+        .status-dot { width: 10px; height: 10px; background: var(--safe); border-radius: 50%; box-shadow: 0 0 10px var(--safe); }
+
+        /* PANEL SA PODACIMA */
+        #data-screen { background: #000; justify-content: flex-start; padding-top: 60px; overflow-y: auto; }
+        
+        .card {
+            width: 100%; background: #0c0c0c; border: 2px solid #1a1a1a;
+            border-radius: 20px; padding: 25px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .card-label { font-size: 14px; font-weight: 900; color: #fff; text-transform: uppercase; margin-bottom: 5px; }
+        .card-val { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; color: #fff; line-height: 1; }
+        .card-unit { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; color: #fff; margin-left: 10px; }
+
+        .card.safe { border-left: 10px solid var(--safe); }
+        .card.danger { border-color: var(--danger); background: #1a0000; border-left: 10px solid var(--danger); }
+        .card.danger .card-val { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
     </style>
 </head>
 <body>
 
-    <div class="app-container" id="main-screen">
+    <div class="screen" id="main-screen">
         <div class="logo">DAX CAR SCAN</div>
-        <button class="btn btn-primary" onclick="pokreniPovezivanje()">POVEŽI ADAPTER</button>
-        <button class="btn btn-outline" onclick="startSimulacija()">SIMULACIJA</button>
+        <button class="btn btn-primary" onclick="traziAdaptere()">POVEŽI ADAPTER</button>
+        <button class="btn btn-outline" onclick="startSim()">SIMULACIJA</button>
     </div>
 
     <div id="connect-overlay">
-        <div id="loading-box" style="text-align: center;">
+        <div class="loader-box" id="loading-state">
             <div class="loader"></div>
-            <p style="font-family: 'Orbitron'; font-size: 12px; letter-spacing: 2px;">TRAŽIM ADAPTERE...</p>
+            <p style="font-family: 'Orbitron'; letter-spacing: 3px; font-size: 12px;">TRAŽIM ADAPTERE...</p>
         </div>
 
         <div id="adapter-list">
-            <h3 style="font-family: 'Orbitron'; font-size: 14px; margin-bottom: 20px; color: #00d2ff;">PRONAĐENI UREĐAJI:</h3>
-            <div class="adapter-item" onclick="odaberiAdapter('OBDII Bluetooth')">
-                <span>OBDII Bluetooth</span>
-                <div class="status-dot"></div>
-            </div>
-            <div class="adapter-item" onclick="odaberiAdapter('V-LINK')">
-                <span>V-LINK Adapter</span>
-                <div class="status-dot"></div>
-            </div>
-            <div class="adapter-item" onclick="odaberiAdapter('ELM327 v2.1')">
-                <span>ELM327 v2.1</span>
-                <div class="status-dot"></div>
-            </div>
-            <button class="btn btn-outline" onclick="zatvoriOverlay()" style="margin-top: 20px; padding: 10px;">OTKAŽI</button>
+            <h3 style="font-family: 'Orbitron'; font-size: 14px; color: var(--accent); margin-bottom: 20px;">PRONAĐENI UREĐAJI:</h3>
+            <div class="adapter-item" onclick="odaberi('OBDII PRO')"><span>OBDII PRO LINK</span> <div class="status-dot"></div></div>
+            <div class="adapter-item" onclick="odaberi('vLINKER')"><span>vLINKER MC+</span> <div class="status-dot"></div></div>
+            <button class="btn btn-outline" onclick="otkazi()" style="margin-top:20px;">NAZAD</button>
         </div>
     </div>
 
+    <div class="screen hidden" id="data-screen">
+        <div style="font-family: 'Orbitron'; font-size: 10px; letter-spacing: 5px; margin-bottom: 25px; color: #444;">DATA STREAMING</div>
+        
+        <div id="card-aku" class="card safe">
+            <div>
+                <div class="card-label">Akumulator</div>
+                <div style="display:flex; align-items:baseline;">
+                    <span id="aku-val" class="card-val">14.2</span>
+                    <span class="card-unit">V</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="card-rpm" class="card safe">
+            <div>
+                <div class="card-label">Obrtaji Motora</div>
+                <div style="display:flex; align-items:baseline;">
+                    <span id="rpm-val" class="card-val">850</span>
+                    <span class="card-unit">RPM</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-outline" style="border-color: #111; color: #333; margin-top: 30px;" onclick="ugasiSim()">ZAUSTAVI</button>
+    </div>
+
     <script>
-        function pokreniPovezivanje() {
+        let simLoop;
+
+        function traziAdaptere() {
             document.getElementById('connect-overlay').style.display = 'flex';
-            document.getElementById('loading-box').style.display = 'block';
+            document.getElementById('loading-state').style.display = 'flex';
             document.getElementById('adapter-list').style.display = 'none';
 
-            // Simuliramo traženje adaptera od 2 sekunde
             setTimeout(() => {
-                document.getElementById('loading-box').style.display = 'none';
+                document.getElementById('loading-state').style.display = 'none';
                 document.getElementById('adapter-list').style.display = 'block';
             }, 2500);
         }
 
-        function odaberiAdapter(ime) {
-            alert("Povezivanje sa: " + ime);
-            zatvoriOverlay();
+        function otkazi() { document.getElementById('connect-overlay').style.display = 'none'; }
+        function odaberi(ime) { alert("Povezano sa " + ime); otkazi(); startSim(); }
+
+        function startSim() {
+            document.getElementById('main-screen').classList.add('hidden');
+            document.getElementById('data-screen').classList.remove('hidden');
+            
+            simLoop = setInterval(() => {
+                let v = (Math.random() * 3 + 11.8).toFixed(1);
+                let r = Math.floor(Math.random() * 2500) + 750;
+                
+                document.getElementById('aku-val').innerText = v;
+                document.getElementById('rpm-val').innerText = r;
+
+                const c = document.getElementById('card-aku');
+                c.className = v < 12.6 ? "card danger" : "card safe";
+            }, 1000);
         }
 
-        function zatvoriOverlay() {
-            document.getElementById('connect-overlay').style.display = 'none';
-        }
-
-        function startSimulacija() {
-            alert("Simulacioni mod pokrenut.");
+        function ugasiSim() {
+            clearInterval(simLoop);
+            document.getElementById('main-screen').classList.remove('hidden');
+            document.getElementById('data-screen').classList.add('hidden');
         }
     </script>
 </body>
