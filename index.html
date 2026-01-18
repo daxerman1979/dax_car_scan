@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json?v=2.2">
-    <title>DCS PRO v36</title>
+    <link rel="manifest" href="manifest.json?v=2.3">
+    <title>DCS PRO v37</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -39,7 +39,6 @@
         .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 75px 15px 40px 15px; }
         .scroll-area { flex-grow: 1; overflow-y: auto; padding-bottom: 30px; width: 100%; }
 
-        /* KARTICE */
         .card { 
             width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; 
             padding: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; 
@@ -58,17 +57,14 @@
         .card.danger .card-val { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
         .card.danger .wave { background: linear-gradient(90deg, rgba(255, 17, 17, 0.4), transparent); animation: wave-move 1s infinite linear; }
 
-        /* GRESKE */
-        .err-item { background: #0a0000; border: 1px solid #311; padding: 20px; border-radius: 20px; margin-bottom: 12px; width: 100%; text-align: left; }
-        .err-code { font-family: 'Orbitron'; color: var(--danger); font-size: 18px; margin-bottom: 5px; }
-        .err-desc { font-size: 11px; color: #fff; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        .err-fix { font-size: 10px; color: #666; font-style: italic; line-height: 1.4; }
+        .err-item { background: #0a0000; border: 1px solid #311; padding: 20px; border-radius: 20px; margin-bottom: 12px; width: 100%; text-align: left; border-left: 5px solid var(--danger); }
+        .err-code { font-family: 'Orbitron'; color: var(--danger); font-size: 18px; margin-bottom: 5px; font-weight: 900; }
+        .err-desc { font-size: 11px; color: #fff; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .err-fix { font-size: 10px; color: #666; font-style: italic; line-height: 1.4; font-weight: 700; }
 
-        /* MODAL */
         #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); display: none; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
         .modal-box { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 400px; padding: 30px; text-align: center; }
 
-        /* SETTINGS */
         .settings-item { background: #0a0a0a; padding: 20px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #111; }
         .settings-item span { font-family: 'Orbitron'; font-size: 12px; font-weight: 900; color: #fff; }
         .check-box { width: 25px; height: 25px; border-radius: 5px; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; }
@@ -155,7 +151,8 @@
         const faultsDb = [
             { code: 'P0101', desc: 'Senzor protoka vazduha (MAF)', fix: 'Očistiti senzor ili proveriti vakuum creva.' },
             { code: 'P2463', desc: 'DPF Filter - Prezasicenost', fix: 'Pokrenuti regeneraciju u vožnji ili servisno čišćenje.' },
-            { code: 'P0420', desc: 'Efikasnost katalizatora niska', fix: 'Moguće začepljenje katalizatora ili lambda sonda.' }
+            { code: 'P0420', desc: 'Efikasnost katalizatora niska', fix: 'Moguće začepljenje katalizatora ili lambda sonda.' },
+            { code: 'P0340', desc: 'Senzor položaja bregaste osovine', fix: 'Proveriti električnu instalaciju i senzor.' }
         ];
 
         function hTS(e) { tsX = e.touches[0].clientX; }
@@ -242,6 +239,7 @@
         function runScan() {
             const out = document.getElementById('diag-target');
             const btn = document.getElementById('scan-btn');
+            
             if(btn.innerText.includes("Skeniraj")) {
                 out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px; color:var(--accent);'>KOMUNIKACIJA...</p></center>";
                 setTimeout(() => {
@@ -252,14 +250,17 @@
                             <div class="err-fix">${f.fix}</div>
                         </div>
                     `).join('');
-                    btn.innerText = "Obriši sve greške"; btn.style.background = "red";
+                    btn.innerText = "Obriši sve greške";
+                    btn.style.background = "red";
                 }, 2000);
             } else {
                 out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; font-size:12px; margin-top:120px; animation: glow-pulse 1s infinite alternate;'>GREŠKE SU OBRIŠANE</p></center>";
                 btn.style.display = "none";
                 setTimeout(() => {
                     out.innerHTML = `<div class="radar-box"><div class="radar-circle"></div><p style="color:#222; font-family:Orbitron; font-size:10px;">ECU MONITOR</p></div>`;
-                    btn.innerText = "Skeniraj vozilo"; btn.style.background = "var(--accent)"; btn.style.display = "block";
+                    btn.innerText = "Skeniraj vozilo";
+                    btn.style.background = "var(--accent)";
+                    btn.style.display = "block";
                 }, 3000);
             }
         }
