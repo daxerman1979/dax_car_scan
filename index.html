@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json?v=1.8">
-    <title>DCS PRO v33</title>
+    <link rel="manifest" href="manifest.json?v=1.9">
+    <title>DCS PRO v34</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -36,7 +36,7 @@
         .btn-outline { background: transparent; color: #fff; border: 1px solid #222; }
 
         #view-slider { display: flex; width: 200vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
-        .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 70px 15px 30px 15px; }
+        .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 70px 15px 40px 15px; }
         .scroll-area { flex-grow: 1; overflow-y: auto; padding-bottom: 20px; width: 100%; }
 
         .card { 
@@ -57,7 +57,11 @@
         .card.danger .card-val { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
         .card.danger .wave { background: linear-gradient(90deg, rgba(255, 17, 17, 0.4), transparent); animation: wave-move 1s infinite linear; }
 
-        /* GRESKE DIZAJN */
+        /* RADAR ANIMACIJA NA PRAZNOM EKRANU */
+        .radar-box { position: relative; margin-top: 100px; height: 150px; display: flex; align-items: center; justify-content: center; }
+        .radar-circle { position: absolute; width: 100px; height: 100px; border: 1px solid #111; border-radius: 50%; animation: radar-pulse 3s infinite linear; }
+        @keyframes radar-pulse { 0% { width: 20px; height: 20px; opacity: 1; border-color: var(--accent); } 100% { width: 180px; height: 180px; opacity: 0; border-color: #000; } }
+
         .err-item { background: #0a0000; border: 1px solid #311; padding: 20px; border-radius: 20px; margin-bottom: 12px; width: 100%; text-align: left; }
         .err-code { font-family: 'Orbitron'; color: var(--danger); font-size: 18px; margin-bottom: 5px; }
         .err-desc { font-size: 11px; color: #fff; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; display: block; }
@@ -98,9 +102,13 @@
         </div>
         <div class="page">
             <div class="scroll-area" id="diag-target">
-                <center><p style="color:#222; font-family:Orbitron; margin-top:100px; text-transform:uppercase; letter-spacing:2px;">Sistem spreman</p></center>
+                <div class="radar-box">
+                    <div class="radar-circle"></div>
+                    <div class="radar-circle" style="animation-delay: 1s;"></div>
+                    <p style="color:#222; font-family:Orbitron; font-size:10px; z-index:5; text-transform:uppercase;">Sistem spreman</p>
+                </div>
             </div>
-            <button class="btn btn-primary" id="scan-btn" onclick="runScan()" style="margin-bottom: 20px;">Skeniraj vozilo</button>
+            <button class="btn btn-primary" id="scan-btn" onclick="runScan()" style="margin-bottom: 40px;">Skeniraj vozilo</button>
             <div class="nav-hint">KLIZNI DESNO ZA MERENJA</div>
         </div>
     </div>
@@ -204,7 +212,7 @@
             const out = document.getElementById('diag-target');
             const btn = document.getElementById('scan-btn');
             if(btn.innerText.includes("SKENIRAJ")) {
-                out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px; color:var(--accent); letter-spacing:2px;'>SKENIRANJE PROTOKOLA...</p></center>";
+                out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px; color:var(--accent); letter-spacing:2px;'>SKENIRANJE...</p></center>";
                 setTimeout(() => {
                     out.innerHTML = faultsDb.map(f => `
                         <div class="err-item">
@@ -216,8 +224,14 @@
                     btn.innerText = "OBRIŠI SVE GREŠKE"; btn.style.background = "red";
                 }, 2000);
             } else {
-                out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; margin-top:100px; letter-spacing:2px;'>GREŠKE OBRISANE</p></center>";
-                btn.innerText = "SKENIRAJ VOZILO"; btn.style.background = "var(--accent)";
+                out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; font-size:12px; margin-top:120px; letter-spacing:2px; animation: glow-pulse 1s infinite alternate;'>GREŠKE SU OBRIŠANE</p></center>";
+                btn.style.display = "none";
+                setTimeout(() => {
+                    out.innerHTML = `<div class="radar-box"><div class="radar-circle"></div><div class="radar-circle" style="animation-delay: 1s;"></div><p style="color:#222; font-family:Orbitron; font-size:10px; z-index:5; text-transform:uppercase;">Sistem spreman</p></div>`;
+                    btn.innerText = "Skeniraj vozilo";
+                    btn.style.background = "var(--accent)";
+                    btn.style.display = "block";
+                }, 3000);
             }
         }
     </script>
