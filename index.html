@@ -21,24 +21,29 @@
             font-family: 'Roboto', sans-serif; height: 100vh; width: 100vw; overflow: hidden; 
         }
 
+        /* EKRANI - Svi ekrani su centrirani */
         .screen {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; position: absolute; top: 0; left: 0;
             transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px;
+            background: var(--bg);
         }
+
+        /* Klasa za sakrivanje koja pomera ekran dole */
         .hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
-        /* DCS ANIMIRANI LOGO */
+        /* DCS ANIMIRANI LOGO NA POČETNOJ */
         .logo { 
-            font-family: 'Orbitron'; font-size: 50px; font-weight: 900; letter-spacing: 8px; 
+            font-family: 'Orbitron'; font-size: 60px; font-weight: 900; letter-spacing: 10px; 
             margin-bottom: 60px; text-align: center; 
             animation: glow-pulse 3s infinite alternate;
         }
         @keyframes glow-pulse {
             0% { color: #111; text-shadow: 0 0 0px var(--accent); }
-            100% { color: #fff; text-shadow: 0 0 20px var(--accent); }
+            100% { color: #fff; text-shadow: 0 0 30px var(--accent); }
         }
 
+        /* DUGMIĆI */
         .btn {
             width: 100%; max-width: 320px; padding: 22px; margin: 10px 0;
             border-radius: 18px; font-family: 'Orbitron'; font-size: 13px;
@@ -48,38 +53,39 @@
         .btn-primary { background: var(--accent); color: #000; box-shadow: 0 0 25px rgba(0, 210, 255, 0.2); }
         .btn-outline { background: transparent; color: #555; border: 1px solid #222; }
 
-        /* POVEZIVANJE OVERLAY */
+        /* LOADER OVERLAY */
         #connect-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.98); display: none; z-index: 2000;
-            align-items: center; justify-content: center; text-align: center;
+            flex-direction: column; align-items: center; justify-content: center;
         }
         .loader {
-            width: 60px; height: 60px; border: 4px solid #111; border-top: 4px solid var(--accent);
+            width: 65px; height: 65px; border: 5px solid #111; border-top: 5px solid var(--accent);
             border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 30px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* SIMULACIJA INDIKATOR */
+        /* SIMULACIJA INDIKATOR (Mala oznaka u uglu) */
         #sim-indicator {
-            display: none; position: fixed; top: env(safe-area-inset-top, 20px); right: 20px;
+            display: none; position: fixed; top: 20px; right: 20px;
             background: var(--warning); color: #000; padding: 6px 15px;
             border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900;
             z-index: 3000; box-shadow: 0 0 15px var(--warning);
         }
 
-        /* DATA STREAM */
+        /* DATA MONITOR EKRAN */
         #data-screen { background: #000; justify-content: flex-start; padding-top: 80px; overflow-y: auto; }
+        
         .card {
             width: 100%; background: #080808; border: 1px solid #151515;
             border-radius: 25px; padding: 25px; margin-bottom: 15px;
             display: flex; justify-content: space-between; align-items: center;
-            transition: 0.4s ease;
         }
         .card-label { font-size: 12px; font-weight: 900; color: #666; text-transform: uppercase; letter-spacing: 1px; }
         .card-val { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; color: #fff; line-height: 1; }
         .card-unit { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; color: #444; margin-left: 10px; }
 
+        /* STANJA KARTICA */
         .card.safe { border-left: 10px solid var(--safe); }
         .card.danger { border-color: var(--danger); background: #150505; border-left: 10px solid var(--danger); }
         .card.danger .card-val { color: var(--danger); text-shadow: 0 0 25px var(--danger); }
@@ -91,16 +97,8 @@
 
     <div class="screen" id="main-screen">
         <div class="logo">DCS</div>
-        <button class="btn btn-primary" onclick="connectOBD()">POVEŽI ADAPTER</button>
-        <button class="btn btn-outline" onclick="startEngineSim(true)">SIMULACIJA</button>
-    </div>
-
-    <div id="connect-overlay">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-            <div class="loader"></div>
-            <p id="status-msg" style="font-family: 'Orbitron'; letter-spacing: 4px; font-size: 11px; color: var(--accent);">TRAŽIM OBD2 PROTOKOL...</p>
-            <button class="btn btn-outline" onclick="stopSearch()" style="width: 180px; margin-top: 40px; border-radius: 30px;">OTKAŽI</button>
-        </div>
+        <button class="btn btn-primary" onclick="connectToOBD()">POVEŽI ADAPTER</button>
+        <button class="btn btn-outline" onclick="startSystem(true)">SIMULACIJA</button>
     </div>
 
     <div class="screen hidden" id="data-screen">
@@ -126,13 +124,20 @@
             </div>
         </div>
 
-        <button class="btn btn-outline" style="margin-top: 40px; border-color: #111; color: #222;" onclick="exitToMenu()">ZAUSTAVI MONITOR</button>
+        <button class="btn btn-outline" style="margin-top: 40px; border-color: #111; color: #222;" onclick="exitToHome()">ZAUSTAVI MONITOR</button>
+    </div>
+
+    <div id="connect-overlay">
+        <div class="loader"></div>
+        <p id="status-msg" style="font-family: 'Orbitron'; letter-spacing: 4px; font-size: 11px; color: var(--accent);">TRAŽIM OBD2 PROTOKOL...</p>
+        <button class="btn btn-outline" onclick="cancelSearch()" style="width: 180px; margin-top: 40px; border-radius: 30px;">OTKAŽI</button>
     </div>
 
     <script>
-        let liveDataInterval;
+        let liveDataLoop;
 
-        async function connectOBD() {
+        // Funkcija za pravi Bluetooth
+        async function connectToOBD() {
             const overlay = document.getElementById('connect-overlay');
             const msg = document.getElementById('status-msg');
             
@@ -140,53 +145,63 @@
             msg.innerText = "TRAŽIM OBD2 PROTOKOL...";
 
             try {
-                // FILTRIRANJE: Tražimo samo uređaje koji podržavaju Serial Port Profile (čest za OBD2)
-                // ili imaju specifična imena karakteristična za adaptere
+                // Filteri za OBD2 adaptere
                 const device = await navigator.bluetooth.requestDevice({
                     filters: [
                         { namePrefix: 'OBD' },
                         { namePrefix: 'ELM' },
-                        { namePrefix: 'V-LINK' },
-                        { services: ['00001101-0000-1000-8000-00805f9b34fb'] } // Standardni SPP UUID za ELM327
+                        { services: ['00001101-0000-1000-8000-00805f9b34fb'] }
                     ]
                 });
 
-                msg.innerText = "UPARIVANJE...";
+                msg.innerText = "POVEZIVANJE...";
                 setTimeout(() => { 
                     overlay.style.display = 'none';
-                    startEngineSim(false); 
+                    startSystem(false); 
                 }, 2000);
 
             } catch (err) {
                 overlay.style.display = 'none';
-                console.log("Bluetooth otkazan: ", err);
                 if (err.name !== 'NotFoundError') {
-                    alert("Greška: " + err.message);
+                    alert("Bluetooth greška: " + err.message);
                 }
             }
         }
 
-        function stopSearch() { document.getElementById('connect-overlay').style.display = 'none'; }
+        function cancelSearch() { 
+            document.getElementById('connect-overlay').style.display = 'none'; 
+        }
 
-        function startEngineSim(isSim) {
+        // Glavna funkcija za ulazak u mod sa podacima
+        function startSystem(isSimulated) {
+            // Pomeri početni ekran i prikaži monitor
             document.getElementById('main-screen').classList.add('hidden');
             document.getElementById('data-screen').classList.remove('hidden');
-            document.getElementById('sim-indicator').style.display = isSim ? 'block' : 'none';
             
-            liveDataInterval = setInterval(() => {
-                let v = (Math.random() * 2.5 + 12.1).toFixed(1);
-                let r = Math.floor(Math.random() * 1800) + 800;
+            // Prikaži žuti indikator ako je simulacija
+            document.getElementById('sim-indicator').style.display = isSimulated ? 'block' : 'none';
+            
+            // Pokreni osvežavanje brojeva
+            liveDataLoop = setInterval(() => {
+                let v = (Math.random() * 2.2 + 12.2).toFixed(1);
+                let r = Math.floor(Math.random() * 1500) + 800;
                 
                 document.getElementById('aku-val').innerText = v;
                 document.getElementById('rpm-val').innerText = r;
 
+                // Alarm za akumulator
                 const c = document.getElementById('card-aku');
-                c.className = v < 12.5 ? "card danger" : "card safe";
+                if (v < 12.6) {
+                    c.className = "card danger";
+                } else {
+                    c.className = "card safe";
+                }
             }, 1000);
         }
 
-        function exitToMenu() {
-            clearInterval(liveDataInterval);
+        // Funkcija za povratak na početnu stranu
+        function exitToHome() {
+            clearInterval(liveDataLoop);
             document.getElementById('main-screen').classList.remove('hidden');
             document.getElementById('data-screen').classList.add('hidden');
             document.getElementById('sim-indicator').style.display = 'none';
