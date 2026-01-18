@@ -2,14 +2,15 @@
 <html lang="sr">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json?v=1.1">
     
-    <title>DCS PRO</title>
+    <title>DCS PRO v27</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -21,16 +22,14 @@
             font-family: 'Roboto', sans-serif; height: 100vh; width: 100vw; overflow: hidden; 
         }
 
-        /* EKRANI */
         .screen {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; position: absolute; top: 0; left: 0;
             transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px;
-            background: var(--bg);
+            background: var(--bg); z-index: 10;
         }
         .hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
-        /* DCS LOGO POČETNA */
         .logo { 
             font-family: 'Orbitron'; font-size: 60px; font-weight: 900; letter-spacing: 10px; 
             margin-bottom: 60px; text-align: center; 
@@ -41,68 +40,52 @@
             100% { color: #fff; text-shadow: 0 0 30px var(--accent); }
         }
 
-        /* DUGMIĆI */
         .btn {
             width: 100%; max-width: 320px; padding: 22px; margin: 10px 0;
             border-radius: 18px; font-family: 'Orbitron'; font-size: 13px;
             font-weight: 900; cursor: pointer; text-transform: uppercase; border: none;
-            letter-spacing: 2px;
         }
         .btn-primary { background: var(--accent); color: #000; }
         .btn-outline { background: transparent; color: #555; border: 1px solid #222; }
 
-        /* LOADER OVERLAY */
-        #connect-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.98); display: none; z-index: 2000;
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-        .loader {
-            width: 65px; height: 65px; border: 5px solid #111; border-top: 5px solid var(--accent);
-            border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 30px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* SIMULACIJA INDIKATOR */
-        #sim-indicator {
-            display: none; position: fixed; top: 20px; right: 20px;
-            background: var(--warning); color: #000; padding: 6px 15px;
-            border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900;
-            z-index: 3000; box-shadow: 0 0 15px var(--warning);
-        }
-
-        /* DATA MONITOR EKRAN */
-        #data-screen { background: #000; justify-content: flex-start; padding-top: 80px; overflow-y: auto; }
+        #data-screen { background: #000; justify-content: flex-start; padding-top: 80px; overflow-y: scroll; display: block; }
         
+        .card-container { padding: 20px; padding-bottom: 100px; }
+
         .card {
             width: 100%; background: #080808; border: 1px solid #151515;
             border-radius: 25px; padding: 25px; margin-bottom: 15px;
             display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer;
         }
-        .card-label { font-size: 12px; font-weight: 900; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-        .card-val { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; color: #fff; line-height: 1; }
-        .card-unit { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; color: #444; margin-left: 10px; }
+        .card-label { font-size: 11px; font-weight: 900; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .card-val { font-family: 'Orbitron'; font-size: 45px; font-weight: 900; color: #fff; line-height: 1; }
+        .card-unit { font-family: 'Orbitron'; font-size: 14px; font-weight: 900; color: #333; margin-left: 8px; }
 
-        .card.safe { border-left: 10px solid var(--safe); }
-        .card.danger { border-color: var(--danger); background: #150505; border-left: 10px solid var(--danger); }
-        .card.danger .card-val { color: var(--danger); text-shadow: 0 0 25px var(--danger); }
+        .card.safe { border-left: 8px solid var(--safe); }
+        .card.danger { border-color: var(--danger); background: #150505; border-left: 8px solid var(--danger); }
+        .card.danger .card-val { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
 
-        /* MODAL ZA DETALJE */
         #details-modal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.95); display: none; z-index: 4000;
-            align-items: center; justify-content: center; padding: 25px;
+            background: rgba(0,0,0,0.97); display: none; z-index: 4000;
+            align-items: center; justify-content: center; padding: 20px;
         }
         .modal-content {
-            background: #0c0c0c; border: 2px solid #222; border-radius: 30px;
-            width: 100%; max-width: 400px; padding: 30px; text-align: center;
+            background: #0c0c0c; border: 1px solid #222; border-radius: 30px;
+            width: 100%; max-width: 450px; padding: 25px;
         }
-        .modal-title { font-family: 'Orbitron'; color: var(--accent); font-size: 18px; margin-bottom: 20px; text-transform: uppercase; }
-        .info-box { background: #111; padding: 15px; border-radius: 15px; margin-bottom: 15px; text-align: left; }
-        .info-label { color: var(--safe); font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
-        .info-text { color: #fff; font-size: 14px; line-height: 1.4; }
-        .danger-label { color: var(--danger); font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+        .modal-title { font-family: 'Orbitron'; color: var(--accent); font-size: 18px; margin-bottom: 20px; text-align: center; font-weight: 900; }
+        .info-box { background: #111; padding: 15px; border-radius: 15px; margin-bottom: 10px; }
+        .info-label { color: var(--safe); font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 3px; }
+        .danger-label { color: var(--danger); font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 3px; }
+        .info-text { color: #fff; font-size: 13px; line-height: 1.4; font-weight: 700; }
+
+        #sim-indicator {
+            display: none; position: fixed; top: 20px; right: 20px;
+            background: var(--warning); color: #000; padding: 6px 15px;
+            border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900;
+            z-index: 3000;
+        }
     </style>
 </head>
 <body>
@@ -111,125 +94,83 @@
 
     <div class="screen" id="main-screen">
         <div class="logo">DCS</div>
-        <button class="btn btn-primary" onclick="connectToOBD()">POVEŽI ADAPTER</button>
-        <button class="btn btn-outline" onclick="startSystem(true)">SIMULACIJA</button>
+        <button class="btn btn-primary" onclick="startApp(false)">POVEŽI ADAPTER</button>
+        <button class="btn btn-outline" onclick="startApp(true)">SIMULACIJA</button>
     </div>
 
     <div class="screen hidden" id="data-screen">
-        <div style="font-family: 'Orbitron'; font-size: 10px; letter-spacing: 6px; margin-bottom: 30px; color: #222;">SYSTEM LIVE STREAM</div>
-        
-        <div id="card-aku" class="card safe" onclick="showDetails('aku')">
-            <div>
-                <div class="card-label">Akumulator</div>
-                <div style="display:flex; align-items:baseline;">
-                    <span id="aku-val" class="card-val">0.0</span>
-                    <span class="card-unit">V</span>
-                </div>
+        <div class="card-container" id="sensor-list">
             </div>
-        </div>
-
-        <div id="card-rpm" class="card safe" onclick="showDetails('rpm')">
-            <div>
-                <div class="card-label">Obrtaji Motora</div>
-                <div style="display:flex; align-items:baseline;">
-                    <span id="rpm-val" class="card-val">0</span>
-                    <span class="card-unit">RPM</span>
-                </div>
-            </div>
-        </div>
-
-        <button class="btn btn-outline" style="margin-top: 40px; border-color: #111; color: #222;" onclick="exitToHome()">ZAUSTAVI MONITOR</button>
+        <center><button class="btn btn-outline" style="margin-bottom: 50px; width: 80%;" onclick="location.reload()">ZAUSTAVI</button></center>
     </div>
 
-    <div id="details-modal" onclick="closeDetails()">
+    <div id="details-modal" onclick="this.style.display='none'">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div id="modal-header" class="modal-title">DETALJI SENZORA</div>
-            
-            <div class="info-box">
-                <div class="info-label">Normalne Vrednosti</div>
-                <div id="modal-normal" class="info-text">--</div>
-            </div>
-
-            <div class="info-box">
-                <div class="danger-label">Mogući Kvarovi</div>
-                <div id="modal-faults" class="info-text">--</div>
-            </div>
-
-            <button class="btn btn-primary" style="margin-top: 10px;" onclick="closeDetails()">ZATVORI</button>
+            <div id="m-title" class="modal-title"></div>
+            <div class="info-box"><div class="info-label">Normale</div><div id="m-norm" class="info-text"></div></div>
+            <div class="info-box"><div class="danger-label">Kvarovi</div><div id="m-faults" class="info-text"></div></div>
+            <button class="btn btn-primary" style="width:100%" onclick="document.getElementById('details-modal').style.display='none'">OK</button>
         </div>
-    </div>
-
-    <div id="connect-overlay">
-        <div class="loader"></div>
-        <p id="status-msg" style="font-family: 'Orbitron'; letter-spacing: 4px; font-size: 11px; color: var(--accent);">TRAŽIM OBD2 PROTOKOL...</p>
-        <button class="btn btn-outline" onclick="cancelSearch()" style="width: 180px; margin-top: 40px; border-radius: 30px;">OTKAŽI</button>
     </div>
 
     <script>
-        let liveDataLoop;
+        const sensorDb = [
+            { id: 'aku', label: 'Akumulator', unit: 'V', min: 13.0, max: 14.8, n: '13.8V - 14.4V', f: 'Ispod 13V: Alternator ne puni. Iznad 15V: Neispravan regler.' },
+            { id: 'rpm', label: 'Obrtaji', unit: 'RPM', min: 700, max: 4500, n: 'Ler: 750-850', f: 'Variranje: Zaprljan EGR ili problem sa diznama.' },
+            { id: 'temp', label: 'Temp. Antifriza', unit: '°C', min: 80, max: 105, n: '90°C - 98°C', f: 'Iznad 105°C: Termostat zaglavljen, kvar ventilatora ili curenje.' },
+            { id: 'brz', label: 'Brzina', unit: 'KMH', min: 0, max: 250, n: 'N/A', f: 'Netačna brzina: Kvar senzora ABS-a.' },
+            { id: 'dpf', label: 'DPF Zaprljanost', unit: '%', min: 0, max: 60, n: 'Ispod 40%', f: 'Preko 60%: Potrebna prinudna regeneracija, rizik od Safe Mode-a.' },
+            { id: 'turbo', label: 'Pritisak Turbine', unit: 'Bar', min: 0.8, max: 2.2, n: '1.2 - 1.6 Bar', f: 'Nizak pritisak: Probušeno crevo interkulera ili kvar turbine.' },
+            { id: 'iat', label: 'Usisna Temp.', unit: '°C', min: 10, max: 65, n: 'Spoljna + 20°C', f: 'Visoka temp: Interkuler zapušen ili nefunkcionalan.' },
+            { id: 'load', label: 'Opterećenje', unit: '%', min: 0, max: 100, n: 'Ler: 15-25%', f: 'Visoko opterećenje u leru: Mehanički otpor ili problem sa kompresijom.' },
+            { id: 'rail', label: 'Fuel Rail', unit: 'Bar', min: 250, max: 1600, n: 'Ler: 250-300', f: 'Nizak pritisak: Kvar pumpe visokog pritiska ili curenje dizne.' },
+            { id: 'throttle', label: 'Položaj Gasa', unit: '%', min: 0, max: 100, n: '0 - 100%', f: 'Odstupanje: Kvar senzora pedale gasa ili klapne gasa.' }
+        ];
 
-        // Baza podataka za detalje
-        const sensorDetails = {
-            aku: {
-                title: "Akumulator / Alternator",
-                normal: "U radu: 13.8V - 14.4V. Ugašen motor: 12.4V - 12.7V.",
-                faults: "Ispod 13V u radu: Kvar alternatora ili labav kaiš. Iznad 15V: Neispravan regler (rizik od eksplozije akumulatora)."
-            },
-            rpm: {
-                title: "Obrtaji Motora",
-                normal: "U leru: 750 - 850 RPM. U vožnji: zavisi od stepena prenosa.",
-                faults: "Variranje u leru: Zaprljan EGR ventil, problem sa diznama ili falš vazduh na usisu."
-            }
-        };
-
-        async function connectToOBD() {
-            const overlay = document.getElementById('connect-overlay');
-            overlay.style.display = 'flex';
-            try {
-                const device = await navigator.bluetooth.requestDevice({
-                    filters: [{ namePrefix: 'OBD' }, { namePrefix: 'ELM' }, { services: ['00001101-0000-1000-8000-00805f9b34fb'] }]
-                });
-                startSystem(false); 
-                overlay.style.display = 'none';
-            } catch (err) {
-                overlay.style.display = 'none';
-                if (err.name !== 'NotFoundError') alert("Bluetooth greška: " + err.message);
-            }
+        function initCards() {
+            const list = document.getElementById('sensor-list');
+            list.innerHTML = sensorDb.map(s => `
+                <div id="card-${s.id}" class="card safe" onclick="showPopup('${s.id}')">
+                    <div>
+                        <div class="card-label">${s.label}</div>
+                        <div style="display:flex; align-items:baseline;">
+                            <span id="${s.id}-val" class="card-val">0</span>
+                            <span class="card-unit">${s.unit}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function cancelSearch() { document.getElementById('connect-overlay').style.display = 'none'; }
-
-        function startSystem(isSimulated) {
-            document.getElementById('main-screen').classList.add('hidden');
-            document.getElementById('data-screen').classList.remove('hidden');
-            document.getElementById('sim-indicator').style.display = isSimulated ? 'block' : 'none';
-            
-            liveDataLoop = setInterval(() => {
-                let v = (Math.random() * 3 + 11.9).toFixed(1);
-                let r = Math.floor(Math.random() * 1200) + 750;
-                document.getElementById('aku-val').innerText = v;
-                document.getElementById('rpm-val').innerText = r;
-                const c = document.getElementById('card-aku');
-                c.className = v < 12.6 || v > 14.9 ? "card danger" : "card safe";
-            }, 1000);
-        }
-
-        function showDetails(id) {
-            const data = sensorDetails[id];
-            document.getElementById('modal-header').innerText = data.title;
-            document.getElementById('modal-normal').innerText = data.normal;
-            document.getElementById('modal-faults').innerText = data.faults;
+        function showPopup(id) {
+            const s = sensorDb.find(x => x.id === id);
+            document.getElementById('m-title').innerText = s.label;
+            document.getElementById('m-norm').innerText = s.n;
+            document.getElementById('m-faults').innerText = s.f;
             document.getElementById('details-modal').style.display = 'flex';
         }
 
-        function closeDetails() { document.getElementById('details-modal').style.display = 'none'; }
-
-        function exitToHome() {
-            clearInterval(liveDataLoop);
-            document.getElementById('main-screen').classList.remove('hidden');
-            document.getElementById('data-screen').classList.add('hidden');
-            document.getElementById('sim-indicator').style.display = 'none';
+        function startApp(isSim) {
+            document.getElementById('main-screen').classList.add('hidden');
+            document.getElementById('data-screen').classList.remove('hidden');
+            document.getElementById('sim-indicator').style.display = isSim ? 'block' : 'none';
+            initCards();
+            
+            setInterval(() => {
+                sensorDb.forEach(s => {
+                    let v = (s.id === 'aku') ? (Math.random() * 2 + 12.5).toFixed(1) : Math.floor(Math.random() * s.max);
+                    const el = document.getElementById(s.id + '-val');
+                    const card = document.getElementById('card-' + s.id);
+                    if(el) el.innerText = v;
+                    if(card) card.className = (v < s.min || v > s.max) ? 'card danger' : 'card safe';
+                });
+            }, 1000);
         }
+
+        window.onload = () => {
+            // Rešava problem sa belim ekranom na nekim uređajima
+            document.body.style.display = 'block';
+        };
     </script>
 </body>
 </html>
