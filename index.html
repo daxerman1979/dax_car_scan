@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json?v=2.5">
-    <title>DCS PRO v38</title>
+    <link rel="manifest" href="manifest.json?v=2.6">
+    <title>DCS PRO v39</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -14,6 +14,7 @@
         
         body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Roboto', sans-serif; height: 100vh; width: 100vw; overflow: hidden; }
 
+        /* START SCREEN */
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -21,6 +22,7 @@
         }
         .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
 
+        /* VIN BAR */
         .vin-bar { 
             width: 100%; padding: 12px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; 
             display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 8px; 
@@ -35,10 +37,12 @@
         .btn-primary { background: var(--accent); color: #000; }
         .btn-outline { background: transparent; color: #fff; border: 1px solid #222; }
 
+        /* SLIDER SISTEM */
         #view-slider { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
         .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 75px 15px 40px 15px; }
         .scroll-area { flex-grow: 1; overflow-y: auto; padding-bottom: 30px; width: 100%; }
 
+        /* KARTICE - BELI BOLD FONT */
         .card { 
             width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; 
             padding: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; 
@@ -48,6 +52,7 @@
         .card-val { font-family: 'Orbitron'; font-size: 48px; font-weight: 900; color: #fff; line-height: 1; z-index: 5; }
         .card-unit { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; color: #555; margin-left: 8px; }
 
+        /* TALASI - SMER S LEVA NA DESNO */
         .wave { position: absolute; left: -100px; top: 0; height: 100%; width: 150px; skewX: -20deg; pointer-events: none; z-index: 1; animation: wave-move 2.5s infinite linear; }
         @keyframes wave-move { 0% { transform: translateX(-100%) skewX(-20deg); opacity: 0; } 30% { opacity: 0.8; } 100% { transform: translateX(600%) skewX(-20deg); opacity: 0; } }
         
@@ -57,19 +62,22 @@
         .card.danger .card-val { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
         .card.danger .wave { background: linear-gradient(90deg, rgba(255, 17, 17, 0.4), transparent); animation: wave-move 1s infinite linear; }
 
+        /* DIJAGNOSTIKA */
         .err-item { background: #0a0000; border: 1px solid #311; padding: 20px; border-radius: 20px; margin-bottom: 12px; width: 100%; text-align: left; border-left: 5px solid var(--danger); }
         .err-code { font-family: 'Orbitron'; color: var(--danger); font-size: 18px; margin-bottom: 5px; font-weight: 900; }
         .err-desc { font-size: 11px; color: #fff; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; display: block; }
         .err-fix { font-size: 10px; color: #666; font-style: italic; line-height: 1.4; font-weight: 700; }
 
-        #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); display: none; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
-        .modal-box { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 400px; padding: 30px; text-align: center; }
-
-        .settings-item { background: #0a0a0a; padding: 20px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #111; }
+        /* KONFIGURACIJA */
+        .settings-item { background: #0a0a0a; padding: 20px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #111; width: 100%; }
         .settings-item span { font-family: 'Orbitron'; font-size: 12px; font-weight: 900; color: #fff; }
         .check-box { width: 25px; height: 25px; border-radius: 5px; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; }
         .check-box.active { background: var(--accent); }
         .check-box.active::after { content: '✓'; color: #000; font-weight: 900; }
+
+        /* MODAL */
+        #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); display: none; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 400px; padding: 30px; text-align: center; }
 
         .radar-box { position: relative; margin-top: 100px; height: 150px; display: flex; align-items: center; justify-content: center; }
         .radar-circle { position: absolute; width: 100px; height: 100px; border: 1px solid #111; border-radius: 50%; animation: radar-pulse 3s infinite linear; }
@@ -136,23 +144,22 @@
     <script>
         let tsX = 0, currentView = 0;
         const sensorDb = [
-            { id: 'aku', label: 'Akumulator', unit: 'V', min: 13.2, max: 14.8, n: '13.8V - 14.4V', f: 'Alternator ne puni ili regler vara.', active: true },
-            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', min: 700, max: 3500, n: 'Ler: 750-850', f: 'Problem sa diznama ili usisom.', active: true },
-            { id: 'temp', label: 'Temp. Motora', unit: '°C', min: 80, max: 102, n: '90°C', f: 'Termostat ili manjak antifriza.', active: true },
-            { id: 'dpf', label: 'DPF Filter', unit: '%', min: 0, max: 45, n: '<40%', f: 'Filter zasićen čađi.', active: true },
-            { id: 'turbo', label: 'Pritisak Turbine', unit: 'Bar', min: 0.8, max: 1.8, n: '1.2-1.6 Bar', f: 'Curenje creva ili kvar turbine.', active: true },
-            { id: 'brz', label: 'Brzina', unit: 'KMH', min: 0, max: 130, n: 'Limit 130', f: 'Senzor ABS kvara.', active: true },
-            { id: 'oil', label: 'Temp. Ulja', unit: '°C', min: 85, max: 110, n: '95°C', f: 'Loše ulje ili hladnjak ulja.', active: true },
-            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', min: 250, max: 1600, n: '250+ Ler', f: 'Pumpa visokog pritiska.', active: true },
-            { id: 'load', label: 'Load Motora', unit: '%', min: 10, max: 85, n: '20% Ler', f: 'Mehanički otpor.', active: true },
-            { id: 'maf', label: 'MAF Senzor', unit: 'g/s', min: 2, max: 140, n: '3-5 Ler', f: 'Zaprljan protokomer.', active: true }
+            { id: 'aku', label: 'Akumulator', unit: 'V', min: 13.2, max: 14.8, n: '13.8V - 14.4V', f: 'Alternator ne puni ili je regler u kvaru.', active: true },
+            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', min: 700, max: 3500, n: 'Ler: 750-850', f: 'Problem sa diznama ili senzorom radilice.', active: true },
+            { id: 'temp', label: 'Temp. Motora', unit: '°C', min: 80, max: 102, n: 'Radna: 90°C', f: 'Termostat zaglavljen ili manjak antifriza.', active: true },
+            { id: 'dpf', label: 'DPF Filter', unit: '%', min: 0, max: 45, n: 'Ispod 40%', f: 'Potrebna regeneracija u vožnji.', active: true },
+            { id: 'turbo', label: 'Pritisak Turbine', unit: 'Bar', min: 0.8, max: 1.8, n: '1.2 - 1.6 Bar', f: 'Curenje creva ili kvar aktuatora turbine.', active: true },
+            { id: 'brz', label: 'Brzina', unit: 'KMH', min: 0, max: 130, n: 'Limit: 130', f: 'Kvar ABS senzora na točku.', active: true },
+            { id: 'oil', label: 'Temp. Ulja', unit: '°C', min: 85, max: 110, n: '95°C - 105°C', f: 'Hladnjak ulja zaprljan.', active: true },
+            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', min: 250, max: 1600, n: 'Ler: 250+ Bar', f: 'Kvar pumpe visokog pritiska.', active: true },
+            { id: 'load', label: 'Opterećenje', unit: '%', min: 10, max: 85, n: 'Ler: 20%', f: 'Mehanički otpor u motoru.', active: true },
+            { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', min: 2, max: 140, n: 'Ler: 3-5 g/s', f: 'Zaprljan MAF senzor (protokomer).', active: true }
         ];
 
         const faultsDb = [
-            { code: 'P0101', desc: 'MAF Senzor - Signal van opsega', fix: 'Očistiti protokomer ili proveriti vakuum creva.' },
-            { code: 'P2463', desc: 'DPF Filter - Visoko zasićenje čađi', fix: 'Izvesti regeneraciju vožnjom na otvorenom putu.' },
-            { code: 'P0420', desc: 'Katalitički sistem - efikasnost niska', fix: 'Proveriti lambda sonde ili stanje katalizatora.' },
-            { code: 'P0380', desc: 'Grejači motora - kvar kola A', fix: 'Proveriti ispravnost grejača i releja grejača.' }
+            { code: 'P0101', desc: 'MAF Senzor - Signal van opsega', fix: 'Očistiti senzor protoka vazduha.' },
+            { code: 'P2463', desc: 'DPF Filter - Prezasicenost čađi', fix: 'Izvesti regeneraciju na otvorenom putu.' },
+            { code: 'P0420', desc: 'Katalizator - efikasnost niska', fix: 'Proveriti lambda sondu ili katalizator.' }
         ];
 
         function hTS(e) { tsX = e.touches[0].clientX; }
@@ -170,7 +177,11 @@
             const loader = document.getElementById('bt-loader');
             loader.style.display = 'flex';
             try {
-                await navigator.bluetooth.requestDevice({ filters: [{ namePrefix: 'OBD' }, { namePrefix: 'ELM' }] });
+                // UNIVERZALNI FILTER ZA VGATE ICAR PRO
+                await navigator.bluetooth.requestDevice({ 
+                    acceptAllDevices: true,
+                    optionalServices: ['00001101-0000-1000-8000-00805f9b34fb']
+                });
                 loader.style.display = 'none';
                 document.getElementById('status-tag').innerText = "ONLINE";
                 document.getElementById('status-tag').style.color = "var(--safe)";
@@ -183,7 +194,7 @@
             renderDashboard();
             renderSettings();
             if(isSim) {
-                document.getElementById('vin-val').innerText = "SIM_MODE_v38";
+                document.getElementById('vin-val').innerText = "SIMULACIJA_v39";
                 setInterval(updateData, 1000);
             }
         }
@@ -239,12 +250,9 @@
         function runScan() {
             const out = document.getElementById('diag-target');
             const btn = document.getElementById('scan-btn');
-            
-            // RESET NA LOADING STANJE
-            out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px; color:var(--accent);'>KOMUNIKACIJA SA ECU...</p></center>";
+            out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px; color:var(--accent);'>POVEZIVANJE...</p></center>";
             
             setTimeout(() => {
-                // PRIKAZ GRESAKA
                 out.innerHTML = faultsDb.map(f => `
                     <div class="err-item">
                         <div class="err-code">${f.code}</div>
@@ -252,8 +260,6 @@
                         <div class="err-fix">${f.fix}</div>
                     </div>
                 `).join('');
-                
-                // PROMENA DUGMETA U OBRIŠI
                 btn.innerText = "Obriši sve greške";
                 btn.style.background = "var(--danger)";
                 btn.onclick = runErase;
@@ -263,10 +269,8 @@
         function runErase() {
             const out = document.getElementById('diag-target');
             const btn = document.getElementById('scan-btn');
-            
             out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; font-size:12px; margin-top:120px; animation: glow-pulse 1s infinite alternate;'>SISTEM OČIŠĆEN</p></center>";
             btn.style.display = "none";
-            
             setTimeout(() => {
                 out.innerHTML = `<div class="radar-box"><div class="radar-circle"></div><p style="color:#222; font-family:Orbitron; font-size:10px;">ECU MONITOR</p></div>`;
                 btn.innerText = "Skeniraj vozilo";
