@@ -4,209 +4,176 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json?v=1.3">
-    
-    <title>DCS PRO v29</title>
+    <link rel="manifest" href="manifest.json?v=1.4">
+    <title>DCS PRO v30</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; --warning: #ffaa00; }
         
-        body, html { 
-            margin: 0; padding: 0; background: var(--bg); color: #fff; 
-            font-family: 'Roboto', sans-serif; height: 100vh; width: 100vw; overflow: hidden; 
-        }
+        body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Roboto', sans-serif; height: 100vh; width: 100vw; overflow: hidden; }
 
-        /* EKRANI */
-        .screen {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; width: 100vw; position: absolute; top: 0; left: 0;
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px;
-            background: var(--bg); z-index: 10;
-        }
-        .hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        /* SLIDER SISTEM */
+        #view-slider { display: flex; width: 200vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
 
-        /* LOGO ANIMACIJA */
+        .screen { width: 100vw; height: 100vh; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; flex-shrink: 0; }
+        .hidden-start { position: fixed; top: 0; left: 0; z-index: 5000; background: #000; transition: 0.5s; }
+        .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+
+        /* VIN BAR */
+        .vin-bar { width: 100%; padding: 10px 20px; background: #0a0a0a; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 9px; color: #444; letter-spacing: 1px; position: fixed; top: 0; z-index: 1000; }
+        .vin-bar b { color: var(--accent); }
+
         .logo { font-family: 'Orbitron'; font-size: 60px; font-weight: 900; letter-spacing: 10px; margin-bottom: 60px; animation: glow-pulse 3s infinite alternate; }
         @keyframes glow-pulse { 0% { color: #111; text-shadow: 0 0 0px var(--accent); } 100% { color: #fff; text-shadow: 0 0 30px var(--accent); } }
 
-        /* DUGMIĆI */
-        .btn { width: 100%; max-width: 320px; padding: 22px; margin: 10px 0; border-radius: 18px; font-family: 'Orbitron'; font-size: 13px; font-weight: 900; cursor: pointer; text-transform: uppercase; border: none; }
+        .btn { width: 100%; max-width: 320px; padding: 20px; margin: 10px 0; border-radius: 15px; font-family: 'Orbitron'; font-size: 13px; font-weight: 900; cursor: pointer; text-transform: uppercase; border: none; }
         .btn-primary { background: var(--accent); color: #000; }
-        .btn-outline { background: transparent; color: #555; border: 1px solid #222; }
+        .btn-outline { background: transparent; color: #fff; border: 1px solid #222; }
 
-        /* DATA MONITOR */
-        #data-screen { background: #000; justify-content: flex-start; padding-top: 60px; overflow-y: scroll; display: block; }
-        .card-container { padding: 15px; padding-bottom: 120px; }
-
-        /* KARTICA */
-        .card {
-            width: 100%; background: #080808; border: 1px solid #151515;
-            border-radius: 25px; padding: 25px; margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            position: relative; overflow: hidden;
-            transition: 0.4s ease;
-        }
+        /* DATA MONITOR & GRESKE */
+        .page-content { width: 100%; height: 100%; padding-top: 60px; overflow-y: scroll; padding-bottom: 100px; }
+        .card { width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; padding: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
         
-        .card-label { font-size: 11px; font-weight: 900; color: #666; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 5; }
-        .card-val { font-family: 'Orbitron'; font-size: 48px; font-weight: 900; color: #fff; line-height: 1; position: relative; z-index: 5; }
+        .card-label { font-size: 11px; font-weight: 900; color: #666; text-transform: uppercase; z-index: 5; }
+        .card-val { font-family: 'Orbitron'; font-size: 48px; font-weight: 900; color: #fff; line-height: 1; z-index: 5; }
         .card-unit { font-family: 'Orbitron'; font-size: 14px; font-weight: 900; color: #333; margin-left: 8px; }
 
-        /* TALASI - SMER: LEVO KA DESNO */
-        .wave {
-            position: absolute; left: -100px; top: 0; height: 100%; width: 150px;
-            skewX: -20deg; pointer-events: none; z-index: 1;
-            animation: wave-move 2.5s infinite linear;
-        }
-        @keyframes wave-move {
-            0% { transform: translateX(-100%) skewX(-20deg); opacity: 0; }
-            30% { opacity: 0.8; }
-            100% { transform: translateX(500%) skewX(-20deg); opacity: 0; }
-        }
-
+        /* TALASI */
+        .wave { position: absolute; left: -100px; top: 0; height: 100%; width: 150px; skewX: -20deg; pointer-events: none; z-index: 1; animation: wave-move 2.5s infinite linear; }
+        @keyframes wave-move { 0% { transform: translateX(-100%) skewX(-20deg); opacity: 0; } 30% { opacity: 0.8; } 100% { transform: translateX(600%) skewX(-20deg); opacity: 0; } }
+        
         .card.safe { border-left: 10px solid var(--safe); }
         .card.safe .wave { background: linear-gradient(90deg, rgba(0, 255, 136, 0.15), transparent); }
-
         .card.danger { border-color: var(--danger); background: #150505; border-left: 10px solid var(--danger); }
         .card.danger .card-val { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
-        .card.danger .wave { 
-            background: linear-gradient(90deg, rgba(255, 17, 17, 0.4), transparent); 
-            animation: wave-move 1s infinite linear; /* Brži talasi za opasnost */
-        }
+        .card.danger .wave { background: linear-gradient(90deg, rgba(255, 17, 17, 0.4), transparent); animation: wave-move 1s infinite linear; }
 
-        /* MODAL */
-        #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); display: none; z-index: 4000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 450px; padding: 25px; }
-        .modal-title { font-family: 'Orbitron'; color: var(--accent); font-size: 18px; margin-bottom: 20px; text-align: center; font-weight: 900; }
-        .info-box { background: #111; padding: 15px; border-radius: 15px; margin-bottom: 10px; }
-        .info-label { color: var(--safe); font-size: 10px; font-weight: 900; text-transform: uppercase; }
-        .danger-label { color: var(--danger); font-size: 10px; font-weight: 900; text-transform: uppercase; }
-        .info-text { color: #fff; font-size: 13px; font-weight: 700; margin-top: 5px; }
+        /* DIJAGNOSTIKA */
+        .err-item { background: #0a0000; border: 1px solid #311; padding: 20px; border-radius: 20px; margin-bottom: 10px; width: 100%; }
+        .err-code { font-family: 'Orbitron'; color: var(--danger); font-size: 18px; margin-bottom: 5px; }
+        .err-desc { font-size: 12px; color: #fff; font-weight: bold; text-transform: uppercase; }
 
-        /* LOADER OVERLAY */
-        #connect-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); display: none; z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
-        .loader { width: 65px; height: 65px; border: 5px solid #111; border-top: 5px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 30px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); display: none; z-index: 6000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 450px; padding: 25px; text-align: center; }
 
-        #sim-indicator { display: none; position: fixed; top: 20px; right: 20px; background: var(--warning); color: #000; padding: 6px 15px; border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; z-index: 3000; }
+        .nav-hint { position: fixed; bottom: 20px; width: 100%; text-align: center; font-family: 'Orbitron'; font-size: 8px; color: #222; letter-spacing: 2px; }
     </style>
 </head>
-<body>
+<body ontouchstart="hTS(event)" ontouchmove="hTM(event)">
 
-    <div id="sim-indicator">SIMULACIJA</div>
-
-    <div class="screen" id="main-screen">
+    <div class="screen hidden-start" id="start-screen">
         <div class="logo">DCS</div>
-        <button class="btn btn-primary" onclick="connectOBD()">POVEŽI ADAPTER</button>
-        <button class="btn btn-outline" onclick="startApp(true)">SIMULACIJA</button>
+        <button class="btn btn-primary" onclick="startDCS(false)">POVEŽI ADAPTER</button>
+        <button class="btn btn-outline" onclick="startDCS(true)">SIMULACIJA</button>
     </div>
 
-    <div class="screen hidden" id="data-screen">
-        <div class="card-container" id="sensor-list"></div>
-        <center><button class="btn btn-outline" style="margin-bottom: 50px; width: 80%; border-color: #111;" onclick="location.reload()">ZAUSTAVI</button></center>
+    <div class="vin-bar">
+        <span>VIN: <b id="vin-val">NIJE DOSTUPNO</b></span>
+        <span>MODEL: <b id="car-val">NIJE DOSTUPNO</b></span>
+    </div>
+
+    <div id="view-slider">
+        <div class="screen">
+            <div class="page-content" id="sensor-list"></div>
+            <div class="nav-hint">KLIZNI LEVO ZA DIJAGNOSTIKU</div>
+        </div>
+
+        <div class="screen">
+            <div class="page-content" id="diag-content">
+                <center><p style="color:#222; font-family:Orbitron; margin-top:100px;">SISTEM SPREMAN</p></center>
+            </div>
+            <button class="btn btn-primary" id="scan-btn" onclick="runScan()">SKENIRAJ GREŠKE</button>
+            <div class="nav-hint">KLIZNI DESNO ZA MERENJA</div>
+        </div>
     </div>
 
     <div id="details-modal" onclick="this.style.display='none'">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div id="m-title" class="modal-title"></div>
-            <div class="info-box"><div class="info-label">Normale</div><div id="m-norm" class="info-text"></div></div>
-            <div class="info-box"><div class="danger-label">Mogući Kvarovi</div><div id="m-faults" class="info-text"></div></div>
-            <button class="btn btn-primary" style="width:100%" onclick="document.getElementById('details-modal').style.display='none'">RAZUMEM</button>
+            <div id="m-title" style="font-family:Orbitron; color:var(--accent); margin-bottom:20px;"></div>
+            <div style="background:#111; padding:15px; border-radius:15px; text-align:left; margin-bottom:10px;">
+                <div style="color:var(--safe); font-size:10px; font-weight:900;">NORMALE</div>
+                <div id="m-norm" style="font-size:13px; margin-top:5px;"></div>
+            </div>
+            <div style="background:#111; padding:15px; border-radius:15px; text-align:left;">
+                <div style="color:var(--danger); font-size:10px; font-weight:900;">KVAROVI</div>
+                <div id="m-faults" style="font-size:13px; margin-top:5px;"></div>
+            </div>
+            <button class="btn btn-primary" style="margin-top:20px; width:100%" onclick="document.getElementById('details-modal').style.display='none'">RAZUMEM</button>
         </div>
     </div>
 
-    <div id="connect-overlay">
-        <div class="loader"></div>
-        <p id="status-msg" style="font-family: 'Orbitron'; letter-spacing: 4px; font-size: 11px; color: var(--accent);">TRAŽIM OBD2 PROTOKOL...</p>
-        <button class="btn btn-outline" onclick="document.getElementById('connect-overlay').style.display='none'" style="width: 180px; margin-top: 40px; border-radius: 30px;">OTKAŽI</button>
-    </div>
-
     <script>
-        const sensorDb = [
-            { id: 'aku', label: 'Napon Akumulatora', unit: 'V', min: 13.2, max: 14.8, n: '13.8V - 14.4V', f: 'Ispod 13.2V: Alternator ne puni. Proveriti kaiš i regler.' },
-            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', min: 700, max: 3800, n: 'Ler: 750-850', f: 'Nemiran rad: Problem sa diznama, grejačima ili senzorom radilice.' },
-            { id: 'temp', label: 'Rashladna Tečnost', unit: '°C', min: 80, max: 102, n: '88°C - 98°C', f: 'Preko 102°C: Kvar termostata, nedostatak antifriza ili kvar ventilatora.' },
-            { id: 'brz', label: 'Brzina Vozila', unit: 'KMH', min: 0, max: 140, n: 'Limit: 130 KMH', f: 'Odstupanje: Kvar senzora brzine na menjaču ili ABS senzora.' },
-            { id: 'dpf', label: 'DPF Zasićenje', unit: '%', min: 0, max: 48, n: 'Ispod 40%', f: 'Preko 50%: Potrebna hitna vožnja na otvorenom putu za regeneraciju.' },
-            { id: 'turbo', label: 'Pritisak Turbine', unit: 'Bar', min: 0.6, max: 2.1, n: '1.2 - 1.8 Bar', f: 'Nizak pritisak: Crevo interkulera puklo ili kvar geometrije turbine.' },
-            { id: 'oil', label: 'Temperatura Ulja', unit: '°C', min: 85, max: 115, n: '90°C - 105°C', f: 'Previsoka temp: Starost ulja, loše podmazivanje ili začepljen hladnjak ulja.' },
-            { id: 'load', label: 'Opterećenje Motora', unit: '%', min: 10, max: 90, n: '15% - 85%', f: 'Visoko u leru: Mehanički otpor u motoru ili kvar senzora protoka vazduha.' },
-            { id: 'rail', label: 'Pritisak Goriva', unit: 'Bar', min: 250, max: 1600, n: 'Ler: 250-300 Bar', f: 'Nizak pritisak: Problem sa pumpom visokog pritiska ili curenje dizni.' },
-            { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', min: 2, max: 150, n: 'Ler: 2-5 g/s', f: 'Netačan signal: Zaprljan MAF senzor (protokomer), gubitak snage.' }
+        let tsX = 0, currentIdx = 0, simActive = false;
+        const sensors = [
+            { id: 'aku', label: 'Akumulator', unit: 'V', min: 13.2, max: 14.8, n: '13.8V-14.4V', f: 'Problem sa punjenjem ili reglerom.' },
+            { id: 'rpm', label: 'Obrtaji', unit: 'RPM', min: 700, max: 3500, n: '750-850', f: 'Problem sa diznama ili vazduhom.' },
+            { id: 'temp', label: 'Temperatura', unit: '°C', min: 80, max: 102, n: '90°C', f: 'Termostat ili curenje antifriza.' },
+            { id: 'dpf', label: 'DPF Filter', unit: '%', min: 0, max: 45, n: '<40%', f: 'Potrebna prinudna regeneracija.' },
+            { id: 'turbo', label: 'Turbo', unit: 'Bar', min: 0.8, max: 1.8, n: '1.2-1.6', f: 'Puknuto crevo ili kvar turbine.' },
+            { id: 'brz', label: 'Brzina', unit: 'KMH', min: 0, max: 130, n: 'Limit 130', f: 'Kvar senzora brzine.' },
+            { id: 'oil', label: 'Ulje', unit: '°C', min: 85, max: 110, n: '95°C', f: 'Loše podmazivanje ili hladnjak ulja.' },
+            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', min: 250, max: 1600, n: '250-300 Ler', f: 'Kvar pumpe visokog pritiska.' },
+            { id: 'load', label: 'Opterećenje', unit: '%', min: 10, max: 85, n: '20%', f: 'Mehanički otpor u motoru.' },
+            { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', min: 2, max: 140, n: '3 g/s Ler', f: 'Zaprljan protokomer.' }
         ];
 
-        function initCards() {
-            const list = document.getElementById('sensor-list');
-            list.innerHTML = sensorDb.map(s => `
-                <div id="card-${s.id}" class="card safe" onclick="showPopup('${s.id}')">
-                    <div class="wave"></div>
-                    <div>
-                        <div class="card-label">${s.label}</div>
-                        <div style="display:flex; align-items:baseline;">
-                            <span id="${s.id}-val" class="card-val">0</span>
-                            <span class="card-unit">${s.unit}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function connectOBD() {
-            const overlay = document.getElementById('connect-overlay');
-            overlay.style.display = 'flex';
-            try {
-                // REALNI BLUETOOTH FILTER ZA OBD2
-                const device = await navigator.bluetooth.requestDevice({
-                    filters: [
-                        { namePrefix: 'OBD' }, { namePrefix: 'ELM' },
-                        { services: ['00001101-0000-1000-8000-00805f9b34fb'] }
-                    ]
-                });
-                overlay.style.display = 'none';
-                startApp(false); 
-            } catch (err) {
-                overlay.style.display = 'none';
-                if (err.name !== 'NotFoundError') alert("Greška: " + err.message);
+        function hTS(e) { tsX = e.touches[0].clientX; }
+        function hTM(e) {
+            let diff = tsX - e.touches[0].clientX;
+            if (Math.abs(diff) > 70) {
+                currentIdx = diff > 0 ? 1 : 0;
+                document.getElementById('view-slider').style.transform = `translateX(-${currentIdx * 100}vw)`;
             }
         }
 
-        function showPopup(id) {
-            const s = sensorDb.find(x => x.id === id);
-            document.getElementById('m-title').innerText = s.label;
+        function startDCS(isSim) {
+            simActive = isSim;
+            document.getElementById('start-screen').classList.add('gone');
+            document.getElementById('sensor-list').innerHTML = sensors.map(s => `
+                <div id="card-${s.id}" class="card safe" onclick="showPop('${s.id}')">
+                    <div class="wave"></div>
+                    <div><div class="card-label">${s.label}</div><div style="display:flex;align-items:baseline;"><span id="${s.id}-v" class="card-val">0</span><span class="card-unit">${s.unit}</span></div></div>
+                </div>
+            `).join('');
+            if(isSim) {
+                document.getElementById('vin-val').innerText = "WVGZZZ1TZBW12XXXX";
+                document.getElementById('car-val').innerText = "VW GOLF 6 2.0 TDI";
+                setInterval(updateSim, 1000);
+            }
+        }
+
+        function updateSim() {
+            sensors.forEach(s => {
+                let v = s.id==='aku' ? (Math.random()*2+12.5).toFixed(1) : Math.floor(Math.random()*(s.max*1.2));
+                document.getElementById(s.id+'-v').innerText = v;
+                const c = document.getElementById('card-'+s.id);
+                c.className = (v<s.min || v>s.max) ? 'card danger' : 'card safe';
+            });
+        }
+
+        function showPop(id) {
+            const s = sensors.find(x => x.id === id);
+            document.getElementById('m-title').innerText = s.label.toUpperCase();
             document.getElementById('m-norm').innerText = s.n;
             document.getElementById('m-faults').innerText = s.f;
             document.getElementById('details-modal').style.display = 'flex';
         }
 
-        function startApp(isSim) {
-            document.getElementById('main-screen').classList.add('hidden');
-            document.getElementById('data-screen').classList.remove('hidden');
-            document.getElementById('sim-indicator').style.display = isSim ? 'block' : 'none';
-            initCards();
-            
-            setInterval(() => {
-                sensorDb.forEach(s => {
-                    let v;
-                    if(s.id === 'aku') v = (Math.random() * 2.8 + 12.0).toFixed(1);
-                    else if(s.id === 'temp' || s.id === 'oil') v = Math.floor(Math.random() * 40) + 75;
-                    else v = Math.floor(Math.random() * (s.max * 1.1));
-
-                    const el = document.getElementById(s.id + '-val');
-                    const card = document.getElementById('card-' + s.id);
-                    if(el) el.innerText = v;
-
-                    if(v < s.min || v > s.max) {
-                        card.classList.replace('safe', 'danger');
-                    } else {
-                        card.classList.replace('danger', 'safe');
-                    }
-                });
-            }, 1000);
+        function runScan() {
+            const out = document.getElementById('diag-content');
+            const btn = document.getElementById('scan-btn');
+            if(btn.innerText.includes("SKENIRAJ")) {
+                out.innerHTML = "<center><div class='loader' style='margin-top:100px; width:40px; height:40px; border:3px solid #111; border-top:3px solid var(--accent); border-radius:50%; animation:spin 1s linear infinite;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px;'>PRISTUP ECU...</p></center>";
+                setTimeout(() => {
+                    out.innerHTML = Array(6).fill(0).map((_, i) => `<div class="err-item"><div class="err-code">P042${i}</div><div class="err-desc">Greška na sistemu za recirkulaciju ili senzoru ${i+1}</div></div>`).join('');
+                    btn.innerText = "OBRIŠI SVE GREŠKE"; btn.style.background = "red";
+                }, 2000);
+            } else {
+                out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; margin-top:100px;'>GREŠKE OBRISANE</p></center>";
+                btn.innerText = "SKENIRAJ GREŠKE"; btn.style.background = "var(--accent)";
+            }
         }
     </script>
 </body>
