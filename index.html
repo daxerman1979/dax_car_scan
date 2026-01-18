@@ -28,14 +28,24 @@
         }
         .hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
-        .logo { font-family: 'Orbitron'; font-size: 32px; font-weight: 900; letter-spacing: 3px; margin-bottom: 50px; text-align: center; }
+        /* NOVI LOGO DCS */
+        .logo { 
+            font-family: 'Orbitron'; font-size: 40px; font-weight: 900; letter-spacing: 5px; 
+            margin-bottom: 50px; text-align: center; 
+            color: #444; /* Početna tamnija boja */
+            animation: logo-pulse 2s infinite alternate; /* Animacija */
+        }
+        @keyframes logo-pulse {
+            0% { color: #444; text-shadow: none; }
+            100% { color: var(--accent); text-shadow: 0 0 15px rgba(0, 210, 255, 0.6); }
+        }
 
         .btn {
             width: 100%; max-width: 320px; padding: 22px; margin: 10px 0;
             border-radius: 15px; font-family: 'Orbitron'; font-size: 14px;
             font-weight: 900; cursor: pointer; text-transform: uppercase; border: none;
         }
-        .btn-primary { background: var(--accent); color: #000; }
+        .btn-primary { background: var(--accent); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.2); }
         .btn-outline { background: transparent; color: #fff; border: 2px solid #222; }
 
         /* LOADER */
@@ -80,7 +90,7 @@
     <div id="sim-indicator">SIMULACIJA</div>
 
     <div class="screen" id="main-screen">
-        <div class="logo">DAX CAR SCAN</div>
+        <div class="logo">DCS</div>
         <button class="btn btn-primary" onclick="pokreniPraviBluetooth()">POVEŽI ADAPTER</button>
         <button class="btn btn-outline" onclick="startSim(true)">SIMULACIJA</button>
     </div>
@@ -125,6 +135,10 @@
         // PRAVO BLUETOOTH POVEZIVANJE
         async function pokreniPraviBluetooth() {
             try {
+                // Prikazi loader
+                document.getElementById('connect-overlay').style.display = 'flex';
+                document.getElementById('status-text').innerText = "TRAŽIM ADAPTER...";
+
                 // Pokušaj otvaranja sistemskog Bluetooth prozora
                 const device = await navigator.bluetooth.requestDevice({
                     filters: [{ namePrefix: 'OBD' }, { namePrefix: 'ELM' }],
@@ -132,13 +146,14 @@
                 });
 
                 document.getElementById('status-text').innerText = "POVEZIVANJE...";
-                // Ovde bi išla logika za povezivanje sa servisom...
+                // U realnom projektu ovde bi se uspostavila konekcija sa uređajem
+                // Za sada, samo simuliramo kratko povezivanje
                 setTimeout(() => { startSim(false); otkazi(); }, 1500);
 
             } catch (error) {
-                // Ako korisnik otkaže ili ne nađe ništa
-                alert("Adapter nije pronađen ili je traženje otkazano.");
-                otkazi();
+                // Ako korisnik otkaže prozor za izbor uređaja ili nema dostupnih uređaja
+                document.getElementById('status-text').innerText = "NEMA ADAPTERA.";
+                setTimeout(() => { otkazi(); alert("Adapter nije pronađen ili je traženje otkazano."); }, 1000);
             }
         }
 
@@ -148,18 +163,22 @@
             document.getElementById('main-screen').classList.add('hidden');
             document.getElementById('data-screen').classList.remove('hidden');
             
-            // Prikaži ili sakrij žuti indikator simulacije
             document.getElementById('sim-indicator').style.display = isSimulation ? 'block' : 'none';
             
             simLoop = setInterval(() => {
-                let v = (Math.random() * 3 + 11.8).toFixed(1);
-                let r = Math.floor(Math.random() * 2500) + 750;
+                // Simulacija akumulatora (između 11.8 i 14.8V)
+                let akuVal = (Math.random() * 3 + 11.8).toFixed(1);
+                // Simulacija obrtaja (između 750 i 3250 RPM)
+                let rpmVal = Math.floor(Math.random() * 2500) + 750;
                 
-                document.getElementById('aku-val').innerText = v;
-                document.getElementById('rpm-val').innerText = r;
+                document.getElementById('aku-val').innerText = akuVal;
+                document.getElementById('rpm-val').innerText = rpmVal;
 
-                const c = document.getElementById('card-aku');
-                c.className = v < 12.6 ? "card danger" : "card safe";
+                const cardAku = document.getElementById('card-aku');
+                if (cardAku) {
+                    // Ako je napon ispod 12.6V, smatramo da je nizak
+                    cardAku.className = akuVal < 12.6 ? "card danger" : "card safe";
+                }
             }, 1000);
         }
 
