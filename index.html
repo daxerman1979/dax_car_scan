@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2061/2061956.png">
-    <title>DCS PRO v56</title>
+    <title>DCS PRO v57</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -18,11 +18,18 @@
         .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
 
         .vin-bar { width: 100%; padding: 12px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 8px; color: #666; position: fixed; top: 0; z-index: 2000; }
-        .logo { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; letter-spacing: 10px; margin-bottom: 50px; }
+        .logo { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; letter-spacing: 10px; margin-bottom: 30px; }
         
         .btn { width: 100%; max-width: 300px; padding: 20px; margin: 10px 0; border-radius: 15px; font-family: 'Orbitron'; font-size: 13px; font-weight: 900; cursor: pointer; text-transform: uppercase; border: none; z-index: 100; transition: 0.3s; }
         .btn-primary { background: var(--accent); color: #000; }
         .btn-secondary { background: #111; color: #fff; border: 1px solid #222; }
+
+        /* MODE SELECTOR */
+        .mode-selector { display: flex; align-items: center; margin-bottom: 20px; cursor: pointer; }
+        .mode-selector span { font-family: 'Orbitron'; font-size: 10px; margin-left: 10px; color: #555; }
+        .check-box-small { width: 20px; height: 20px; border: 2px solid var(--accent); border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+        .check-box-small.active { background: var(--accent); }
+        .check-box-small.active::after { content: '✓'; color: #000; font-size: 12px; font-weight: 900; }
 
         #view-slider { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
         .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 75px 15px 110px 15px; }
@@ -63,13 +70,18 @@
 
     <div id="start-screen">
         <div class="logo">DCS</div>
-        <button class="btn btn-primary" onclick="connectOBD()">POVEŽI ADAPTER</button>
-        <button class="btn btn-secondary" onclick="launch(true)">SIMULACIJA (TEST)</button>
+        
+        <div class="mode-selector" onclick="toggleMainMode()">
+            <div id="main-check" class="check-box-small active"></div>
+            <span id="mode-text">OBD2 LIVE MOD AKTIVAN</span>
+        </div>
+
+        <button class="btn btn-primary" onclick="startApp()">POKRENI SISTEM</button>
         <button id="install-btn" class="btn btn-secondary" style="display:none; font-size:10px;">INSTALIRAJ DCS PRO</button>
     </div>
 
     <div class="vin-bar">
-        <span>VIN: <b id="vin-val">DCS_REAL_v56</b></span>
+        <span>VIN: <b id="vin-val">DCS_v57_OBD2</b></span>
         <span>STATUS: <b id="status-tag" style="color:var(--danger)">OFFLINE</b></span>
     </div>
 
@@ -101,9 +113,8 @@
     </div>
 
     <script>
-        let tsX = 0, currentView = 0, obdChar, isLive = false, deferredPrompt;
+        let tsX = 0, currentView = 0, obdChar, isLive = false, isSimulation = false;
 
-        // BAZA OD 20 SENZORA SA PRAVIM OBD2 PID KOMANDAMA
         const sensorDb = [
             { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', cmd: '010C', min: 0, max: 5000, n: '750-900 RPM', f: 'Problem sa diznama.', active: true },
             { id: 'brz', label: 'Brzina', unit: 'KMH', cmd: '010D', min: 0, max: 135, n: 'U granicama zakona.', f: 'Senzor brzine.', active: true },
@@ -127,11 +138,31 @@
             { id: 'ambient', label: 'Spoljna Temp', unit: '°C', cmd: '0146', min: -20, max: 45, n: 'Spoljna temp.', f: 'Senzor branika.', active: true }
         ];
 
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').style.display = 'block'; });
+        function toggleMainMode() {
+            const check = document.getElementById('main-check');
+            const txt = document.getElementById('mode-text');
+            if(check.classList.contains('active')) {
+                check.classList.remove('active');
+                txt.innerText = "SIMULACIJA MOD AKTIVAN";
+                isSimulation = true;
+            } else {
+                check.classList.add('active');
+                txt.innerText = "OBD2 LIVE MOD AKTIVAN";
+                isSimulation = false;
+            }
+        }
+
+        async function startApp() {
+            if (isSimulation) {
+                launch(true);
+            } else {
+                connectOBD();
+            }
+        }
 
         async function connectOBD() {
             document.getElementById('bt-loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "POVEZIVANJE...";
+            document.getElementById('loader-text').innerText = "TRAŽIM VGATE...";
             try {
                 const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] });
                 const server = await device.gatt.connect();
@@ -142,7 +173,9 @@
                 document.getElementById('status-tag').innerText = "LIVE";
                 document.getElementById('status-tag').style.color = "var(--safe)";
                 isLive = true; launch(false); startLiveLoop();
-            } catch (e) { console.log(e); }
+            } catch (e) { 
+                alert("Greška pri povezivanju: " + e.message); 
+            }
             document.getElementById('bt-loader').style.display = 'none';
         }
 
@@ -150,7 +183,13 @@
 
         async function startLiveLoop() {
             if (!isLive) return;
-            for (let s of sensorDb) { if(s.active) { await sendRaw(s.cmd); updateUI(s.id, getVal(s.id)); await new Promise(r => setTimeout(r, 100)); } }
+            for (let s of sensorDb) { 
+                if(s.active) { 
+                    await sendRaw(s.cmd); 
+                    updateUI(s.id, getVal(s.id)); 
+                    await new Promise(r => setTimeout(r, 120)); 
+                } 
+            }
             requestAnimationFrame(startLiveLoop);
         }
 
@@ -171,7 +210,10 @@
         function launch(isSim) {
             document.getElementById('start-screen').classList.add('gone');
             renderDashboard(); renderSettings();
-            if(isSim) setInterval(() => { sensorDb.forEach(s => { if(s.active) updateUI(s.id, getVal(s.id)); }); }, 1000);
+            if(isSim) {
+                document.getElementById('status-tag').innerText = "SIMULACIJA";
+                setInterval(() => { sensorDb.forEach(s => { if(s.active) updateUI(s.id, getVal(s.id)); }); }, 1000);
+            }
         }
 
         function renderDashboard() {
@@ -201,26 +243,26 @@
 
         async function realScan() {
             document.getElementById('bt-loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "SKENIRANJE ECU...";
-            await sendRaw("03");
+            document.getElementById('loader-text').innerText = "SKENIRANJE...";
+            if(!isSimulation) await sendRaw("03");
             setTimeout(() => {
                 document.getElementById('bt-loader').style.display = 'none';
-                document.getElementById('diag-target').innerHTML = `<div style="background:#150000; padding:25px; border-radius:25px; border:1px solid red; text-align:left;"><h3 style="color:red; font-family:Orbitron;">P0420 DETEKTOVAN</h3><p style="font-size:12px; color:#fff;">Katalitički sistem ispod granice efikasnosti. Lampica Check Engine aktivna.</p></div>`;
+                document.getElementById('diag-target').innerHTML = `<div style="background:#150000; padding:25px; border-radius:25px; border:1px solid red; text-align:left;"><h3 style="color:red; font-family:Orbitron;">P0420 DETEKTOVAN</h3><p style="font-size:12px; color:#fff;">Efikasnost katalizatora niska. Check Engine lampica aktivna.</p></div>`;
                 const btn = document.getElementById('scan-btn');
-                btn.innerText = "OBRIŠI GREŠKE I UGASI LAMPICU"; btn.style.background = "var(--danger)"; btn.onclick = realErase;
+                btn.innerText = "OBRIŠI GREŠKU"; btn.style.background = "var(--danger)"; btn.onclick = realErase;
             }, 2000);
         }
 
         async function realErase() {
             document.getElementById('bt-loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "BRISANJE (MODE 04)...";
-            await sendRaw("04");
+            document.getElementById('loader-text').innerText = "BRISANJE...";
+            if(!isSimulation) await sendRaw("04");
             setTimeout(() => {
                 document.getElementById('bt-loader').style.display = 'none';
                 document.getElementById('diag-target').innerHTML = "<h2 style='color:var(--safe); font-family:Orbitron; margin-top:100px;'>USPEŠNO OBRISANO</h2>";
                 document.getElementById('scan-btn').style.display = "none";
                 setTimeout(() => {
-                    document.getElementById('diag-target').innerHTML = `<center><p style="color:#222; font-family:Orbitron; margin-top:100px;">SISTEM SPREMAN</p></center>`;
+                    document.getElementById('diag-target').innerHTML = `<center><p style="color:#222; font-family:Orbitron; margin-top:100px;">SKENIRANJE SPREMNO</p></center>`;
                     const btn = document.getElementById('scan-btn');
                     btn.innerText = "Skeniraj vozilo"; btn.style.background = "var(--accent)"; btn.style.display = "block"; btn.onclick = realScan;
                 }, 3000);
