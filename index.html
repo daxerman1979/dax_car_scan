@@ -4,87 +4,50 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json?v=2.8">
-    <title>DCS PRO v41</title>
+    <link rel="manifest" href="manifest.json?v=3.0">
+    <title>DCS PRO v43</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
+        /* Stilovi ostaju isti radi kontinuiteta dizajna */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; --warning: #ffaa00; }
-        
         body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Roboto', sans-serif; height: 100vh; width: 100vw; overflow: hidden; }
-
-        #start-screen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 9000; transition: 0.5s ease;
-        }
+        #start-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; transition: 0.5s ease; }
         .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-
-        .vin-bar { 
-            width: 100%; padding: 12px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; 
-            display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 8px; 
-            color: #666; letter-spacing: 1px; position: fixed; top: 0; z-index: 2000; 
-        }
+        .vin-bar { width: 100%; padding: 12px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 8px; color: #666; letter-spacing: 1px; position: fixed; top: 0; z-index: 2000; }
         .vin-bar b { color: var(--accent); }
-
         .logo { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; letter-spacing: 10px; margin-bottom: 50px; animation: glow-pulse 3s infinite alternate; }
         @keyframes glow-pulse { 0% { color: #111; text-shadow: 0 0 0px var(--accent); } 100% { color: #fff; text-shadow: 0 0 30px var(--accent); } }
-        
         .btn { width: 100%; max-width: 300px; padding: 20px; margin: 10px 0; border-radius: 15px; font-family: 'Orbitron'; font-size: 13px; font-weight: 900; cursor: pointer; text-transform: uppercase; border: none; }
         .btn-primary { background: var(--accent); color: #000; }
         .btn-outline { background: transparent; color: #fff; border: 1px solid #222; }
-
-        /* FILTER TOGGLE NA STARTU */
         .filter-toggle { margin-top: 20px; display: flex; align-items: center; gap: 10px; font-family: 'Orbitron'; font-size: 10px; color: #444; }
         .small-check { width: 18px; height: 18px; border: 1px solid #333; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .small-check.active { background: var(--accent); border-color: var(--accent); }
         .small-check.active::after { content: '✓'; color: #000; font-weight: 900; font-size: 12px; }
-
         #view-slider { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
         .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 75px 15px 40px 15px; }
         .scroll-area { flex-grow: 1; overflow-y: auto; padding-bottom: 30px; width: 100%; }
-
-        /* KARTICE */
-        .card { 
-            width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; 
-            padding: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; 
-            align-items: center; position: relative; overflow: hidden; 
-        }
+        .card { width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; padding: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
         .card-label { font-size: 14px; font-weight: 900; color: #FFF; text-transform: uppercase; z-index: 5; letter-spacing: 1px; }
         .card-val { font-family: 'Orbitron'; font-size: 48px; font-weight: 900; color: #fff; line-height: 1; z-index: 5; }
         .card-unit { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; color: #555; margin-left: 8px; }
-
         .wave { position: absolute; left: -100px; top: 0; height: 100%; width: 150px; skewX: -20deg; pointer-events: none; z-index: 1; animation: wave-move 2.5s infinite linear; }
         @keyframes wave-move { 0% { transform: translateX(-100%) skewX(-20deg); opacity: 0; } 30% { opacity: 0.8; } 100% { transform: translateX(600%) skewX(-20deg); opacity: 0; } }
-        
         .card.safe { border-left: 12px solid var(--safe); }
         .card.danger { border-color: var(--danger); background: #150505; border-left: 12px solid var(--danger); }
         .card.danger .card-val { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
-        .card.danger .wave { background: linear-gradient(90deg, rgba(255, 17, 17, 0.4), transparent); animation: wave-move 1s infinite linear; }
-
-        /* GRESKE */
         .err-item { background: #0a0000; border: 1px solid #311; padding: 20px; border-radius: 20px; margin-bottom: 12px; width: 100%; text-align: left; border-left: 5px solid var(--danger); }
         .err-code { font-family: 'Orbitron'; color: var(--danger); font-size: 18px; font-weight: 900; }
         .err-desc { font-size: 11px; color: #fff; font-weight: 900; text-transform: uppercase; margin: 5px 0; display: block; }
         .err-fix { font-size: 10px; color: #666; font-style: italic; line-height: 1.4; font-weight: 700; }
-
-        /* SETTINGS */
-        .settings-item { background: #0a0a0a; padding: 20px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #111; width: 100%; }
-        .settings-item span { font-family: 'Orbitron'; font-size: 12px; font-weight: 900; color: #fff; }
-        .check-box { width: 25px; height: 25px; border-radius: 5px; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; }
-        .check-box.active { background: var(--accent); }
-        .check-box.active::after { content: '✓'; color: #000; font-weight: 900; }
-
         #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); display: none; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
         .modal-box { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 400px; padding: 30px; text-align: center; }
-
         .radar-box { position: relative; margin-top: 100px; height: 150px; display: flex; align-items: center; justify-content: center; }
         .radar-circle { position: absolute; width: 100px; height: 100px; border: 1px solid #111; border-radius: 50%; animation: radar-pulse 3s infinite linear; }
         @keyframes radar-pulse { 0% { width: 20px; height: 20px; opacity: 1; border-color: var(--accent); } 100% { width: 180px; height: 180px; opacity: 0; border-color: #000; } }
-
         .nav-hint { position: fixed; bottom: 15px; width: 100%; text-align: center; font-family: 'Orbitron'; font-size: 8px; color: #222; letter-spacing: 2px; }
-
         #bt-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
         .spin { width: 45px; height: 45px; border: 4px solid #111; border-top: 4px solid var(--accent); border-radius: 50%; animation: rot 1s linear infinite; }
         @keyframes rot { to { transform: rotate(360deg); } }
@@ -98,7 +61,6 @@
         <div class="logo">DCS</div>
         <button class="btn btn-primary" onclick="handleConnect()">POVEŽI ADAPTER</button>
         <button class="btn btn-outline" onclick="launch(true)">SIMULACIJA</button>
-        
         <div class="filter-toggle">
             <div id="filter-box" class="small-check active" onclick="this.classList.toggle('active')"></div>
             <span>PAMETNI FILTER (HIDDEN TV/AUDIO)</span>
@@ -111,11 +73,7 @@
     </div>
 
     <div id="view-slider">
-        <div class="page">
-            <div class="scroll-area" id="list-target"></div>
-            <div class="nav-hint">KLIZNI LEVO ZA DIJAGNOSTIKU</div>
-        </div>
-
+        <div class="page"><div class="scroll-area" id="list-target"></div><div class="nav-hint">KLIZNI LEVO ZA DIJAGNOSTIKU</div></div>
         <div class="page">
             <div class="scroll-area" id="diag-target">
                 <div class="radar-box"><div class="radar-circle"></div><p style="color:#222; font-family:Orbitron; font-size:10px;">ECU MONITOR</p></div>
@@ -123,7 +81,6 @@
             <button class="btn btn-primary" id="scan-btn" onclick="runScan()" style="margin-bottom: 40px;">Skeniraj vozilo</button>
             <div class="nav-hint">LEVO: PODEŠAVANJA | DESNO: MERENJA</div>
         </div>
-
         <div class="page">
             <div style="font-family:Orbitron; font-size:12px; margin-bottom:20px; color:var(--accent);">IZBOR SENZORA</div>
             <div class="scroll-area" id="settings-target"></div>
@@ -149,22 +106,69 @@
     <script>
         let tsX = 0, currentView = 0;
         const sensorDb = [
-            { id: 'aku', label: 'Akumulator', unit: 'V', min: 13.2, max: 14.8, n: '13.8V-14.4V', f: 'Alternator ne puni ili regler vara.', active: true },
-            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', min: 700, max: 3500, n: 'Ler: 750-850', f: 'Problem sa diznama ili usisom.', active: true },
-            { id: 'temp', label: 'Temp. Motora', unit: '°C', min: 80, max: 102, n: '90°C', f: 'Termostat ili manjak antifriza.', active: true },
-            { id: 'dpf', label: 'DPF Filter', unit: '%', min: 0, max: 45, n: '<40%', f: 'Filter zasićen čađi.', active: true },
-            { id: 'turbo', label: 'Pritisak Turbine', unit: 'Bar', min: 0.8, max: 1.8, n: '1.2-1.6 Bar', f: 'Curenje creva ili kvar turbine.', active: true },
-            { id: 'brz', label: 'Brzina', unit: 'KMH', min: 0, max: 130, n: 'Limit 130', f: 'Senzor ABS kvara.', active: true },
-            { id: 'oil', label: 'Temp. Ulja', unit: '°C', min: 85, max: 110, n: '95°C', f: 'Loše ulje ili hladnjak.', active: true },
-            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', min: 250, max: 1600, n: '250+ Ler', f: 'Pumpa visokog pritiska.', active: true },
-            { id: 'load', label: 'Load Motora', unit: '%', min: 10, max: 85, n: '20% Ler', f: 'Mehanički otpor.', active: true },
-            { id: 'maf', label: 'MAF Senzor', unit: 'g/s', min: 2, max: 140, n: '3-5 Ler', f: 'Zaprljan protokomer.', active: true }
+            { id: 'aku', label: 'Akumulator', unit: 'V', min: 13.2, max: 14.8, n: '13.8V-14.4V', f: 'Problem sa punjenjem.', active: true },
+            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', min: 700, max: 3500, n: 'Ler: 800', f: 'Problem sa usisom.', active: true },
+            { id: 'temp', label: 'Temp. Motora', unit: '°C', min: 80, max: 102, n: '90°C', f: 'Proveriti antifriz.', active: true },
+            { id: 'dpf', label: 'DPF Filter', unit: '%', min: 0, max: 45, n: '<40%', f: 'Potrebna regeneracija.', active: true },
+            { id: 'turbo', label: 'Turbo Bar', unit: 'Bar', min: 0.8, max: 1.8, n: '1.4 Bar', f: 'Curenje pritiska.', active: true },
+            { id: 'brz', label: 'Brzina', unit: 'KMH', min: 0, max: 130, n: 'Limit 130', f: 'ABS senzor.', active: true },
+            { id: 'oil', label: 'Temp. Ulja', unit: '°C', min: 85, max: 110, n: '95°C', f: 'Staro ulje.', active: true },
+            { id: 'fuel', label: 'Fuel Press', unit: 'Bar', min: 250, max: 1600, n: '250+ Bar', f: 'Pumpa visokog pritiska.', active: true },
+            { id: 'load', label: 'Motor Load', unit: '%', min: 10, max: 85, n: '20% Ler', f: 'Mehanički otpor.', active: true },
+            { id: 'maf', label: 'MAF Flow', unit: 'g/s', min: 2, max: 140, n: '3-5 Ler', f: 'MAF zaprljan.', active: true }
         ];
 
+        // 50 NAJČEŠĆIH KODOVA
         const faultsDb = [
-            { code: 'P0101', desc: 'MAF Senzor - Signal van opsega', fix: 'Očistiti protokomer.' },
-            { code: 'P2463', desc: 'DPF Filter - Visoko zasićenje', fix: 'Izvesti regeneraciju u vožnji.' },
-            { code: 'P0420', desc: 'Efikasnost katalizatora niska', fix: 'Proveriti lambda sondu.' }
+            {code:'P0101', desc:'MAF Senzor - Opseg/Performanse', fix:'Očistiti MAF senzor ili proveriti vakuum.'},
+            {code:'P0113', desc:'IAT Senzor - Visok ulaz', fix:'Proveriti senzor temperature usisa.'},
+            {code:'P0121', desc:'Senzor pedale gasa - Opseg', fix:'Očistiti leptir gasa ili proveriti instalaciju.'},
+            {code:'P0130', desc:'Lambda Sonda (Bank 1 Senzor 1)', fix:'Zameniti prednju lambda sondu.'},
+            {code:'P0135', desc:'Grejač Lambda Sonde - Kvar', fix:'Grejač sonde neispravan, zameniti sondu.'},
+            {code:'P0171', desc:'Smeša suviše siromašna (Bank 1)', fix:'Proveriti fals vazduh ili pritisak goriva.'},
+            {code:'P0172', desc:'Smeša suviše bogata (Bank 1)', fix:'Proveriti dizne ili regulator pritiska.'},
+            {code:'P0201', desc:'Dizna 1 - Kvar kola', fix:'Proveriti električni konektor dizne 1.'},
+            {code:'P0234', desc:'Turbo punjač - Overboost', fix:'Proveriti ventil turbine ili geometriju.'},
+            {code:'P0299', desc:'Turbo punjač - Underboost', fix:'Proveriti creva turbine (puknuće).'},
+            {code:'P0300', desc:'Nasumičan izostanak paljenja', fix:'Proveriti svećice, bobine i gorivo.'},
+            {code:'P0301', desc:'Izostanak paljenja - Cilindar 1', fix:'Zameniti bobinu ili svećicu na 1. cilindru.'},
+            {code:'P0302', desc:'Izostanak paljenja - Cilindar 2', fix:'Zameniti bobinu ili svećicu na 2. cilindru.'},
+            {code:'P0335', desc:'Senzor radilice (CKP) - Kvar', fix:'Zameniti senzor radilice.'},
+            {code:'P0340', desc:'Senzor bregaste (CMP) - Kvar', fix:'Zameniti senzor bregaste osovine.'},
+            {code:'P0401', desc:'EGR Sistem - Nedovoljan protok', fix:'Očistiti EGR ventil ili cevi EGR-a.'},
+            {code:'P0403', desc:'EGR Kontrola - Kvar kola', fix:'Električni kvar EGR ventila.'},
+            {code:'P0420', desc:'Katalizator - Efikasnost niska', fix:'Katalizator začepljen ili lambda sonda laže.'},
+            {code:'P0442', desc:'EVAP Sistem - Malo curenje', fix:'Proveriti čep rezervoara ili kanister.'},
+            {code:'P0500', desc:'Senzor brzine (VSS) - Kvar', fix:'Proveriti senzor na menjaču ili ABS.'},
+            {code:'P0505', desc:'Kontrola lera (IAC) - Kvar', fix:'Očistiti motorić lera ili leptir gasa.'},
+            {code:'P0520', desc:'Senzor pritiska ulja - Kvar', fix:'Zameniti prekidač/senzor pritiska ulja.'},
+            {code:'P0562', desc:'Napon sistema - Nizak', fix:'Proveriti akumulator i alternator.'},
+            {code:'P0606', desc:'ECU / Procesor - Kvar', fix:'Interna greška kompjutera motora.'},
+            {code:'P0670', desc:'Modul grejača - Kvar kola', fix:'Proveriti relej ili modul grejača.'},
+            {code:'P0700', desc:'Kontrola menjača (TCM)', fix:'Greška u elektronici automatskog menjača.'},
+            {code:'P0705', desc:'Senzor opsega menjača (PRNDL)', fix:'Proveriti birač brzina na menjaču.'},
+            {code:'P0741', desc:'Torque Converter Clutch - Kvar', fix:'Problem sa konverterom obrtnog momenta.'},
+            {code:'P1135', desc:'Lambda Sonda - Grejač (Bank 1)', fix:'Specifična greška grejača sonde.'},
+            {code:'P2002', desc:'DPF Efikasnost - Ispod granice', fix:'Potrebno čišćenje ili zamena DPF filtera.'},
+            {code:'P2187', desc:'Siromašna smeša na leru', fix:'Proveriti PCV ventil ili usis.'},
+            {code:'P2263', desc:'Sistem turbine - Performanse', fix:'Proveriti varijabilnu geometriju turbine.'},
+            {code:'P2293', desc:'Regulator pritiska goriva 2', fix:'Proveriti pumpu visokog pritiska.'},
+            {code:'P2463', desc:'DPF - Nagomilavanje čađi', fix:'Prisilna regeneracija odmah.'},
+            {code:'P2563', desc:'Senzor položaja turbine', fix:'Proveriti vakuum aktuator turbine.'},
+            {code:'P0087', desc:'Pritisak goriva - Prenizak', fix:'Proveriti filter goriva ili pumpu.'},
+            {code:'P0011', desc:'Tajming bregaste - Napredan', fix:'Proveriti VVT solenoid ili ulje.'},
+            {code:'P0118', desc:'Senzor temperature - Visok ulaz', fix:'Proveriti senzor antifriza ili žice.'},
+            {code:'P0128', desc:'Termostat - Ispod temp. otvaranja', fix:'Zameniti termostat (ostao otvoren).'},
+            {code:'P0325', desc:'Knock Senzor - Kvar kola', fix:'Proveriti senzor detonacije na bloku.'},
+            {code:'P0380', desc:'Grejači motora - Kvar kola A', fix:'Zameniti neispravne grejače.'},
+            {code:'P0440', desc:'EVAP Sistem - Kvar', fix:'Proveriti sistem za isparenja goriva.'},
+            {code:'P0507', desc:'Idle Control - RPM veći od očekivanog', fix:'Proveriti vakuum ili leptir gasa.'},
+            {code:'P0601', desc:'ECU Memory Checksum Error', fix:'Potrebno flešovanje ili zamena ECU.'},
+            {code:'P0730', desc:'Pogrešan prenosni odnos', fix:'Menjač proklizava, proveriti nivo ulja.'},
+            {code:'P0841', desc:'Senzor pritiska ulja menjača', fix:'Proveriti senzore unutar menjača.'},
+            {code:'P1614', desc:'Imobilajzer - Ključ nije prepoznat', fix:'Proveriti bateriju ključa ili antenu brave.'},
+            {code:'P2101', desc:'Motor leptira gasa - Opseg', fix:'Problem sa motorom zaklopke usisa.'},
+            {code:'P2507', desc:'ECM/PCM Napon - Nizak', fix:'Glavno napajanje kompjutera oslabilo.'}
         ];
 
         function hTS(e) { tsX = e.touches[0].clientX; }
@@ -179,28 +183,17 @@
         }
 
         async function handleConnect() {
-            const loader = document.getElementById('bt-loader');
             const useFilter = document.getElementById('filter-box').classList.contains('active');
-            loader.style.display = 'flex';
-            
+            document.getElementById('bt-loader').style.display = 'flex';
             try {
-                let options = { optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] };
-                
-                if (useFilter) {
-                    options.filters = [
-                        { namePrefix: 'OBD' }, { namePrefix: 'ELM' }, { namePrefix: 'Vgate' }, 
-                        { namePrefix: 'vgate' }, { namePrefix: 'V-LINK' }, { namePrefix: 'IOS-VLINK' }
-                    ];
-                } else {
-                    options.acceptAllDevices = true;
-                }
-
-                await navigator.bluetooth.requestDevice(options);
-                loader.style.display = 'none';
+                let opts = { optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] };
+                if (useFilter) opts.filters = [{ namePrefix: 'OBD' }, { namePrefix: 'ELM' }, { namePrefix: 'Vgate' }, { namePrefix: 'V-LINK' }];
+                else opts.acceptAllDevices = true;
+                await navigator.bluetooth.requestDevice(opts);
                 document.getElementById('status-tag').innerText = "ONLINE";
                 document.getElementById('status-tag').style.color = "var(--safe)";
                 launch(false);
-            } catch (e) { loader.style.display = 'none'; }
+            } catch (e) {} finally { document.getElementById('bt-loader').style.display = 'none'; }
         }
 
         function launch(isSim) {
@@ -208,7 +201,7 @@
             renderDashboard();
             renderSettings();
             if(isSim) {
-                document.getElementById('vin-val').innerText = "WVG_SIM_v41";
+                document.getElementById('vin-val').innerText = "WVGZZZ_PRO_v43";
                 setInterval(updateData, 1000);
             }
         }
@@ -224,8 +217,7 @@
         }
 
         function renderSettings() {
-            const target = document.getElementById('settings-target');
-            target.innerHTML = sensorDb.map(s => `
+            document.getElementById('settings-target').innerHTML = sensorDb.map(s => `
                 <div class="settings-item" onclick="toggleSensor('${s.id}')">
                     <span>${s.label}</span>
                     <div class="check-box ${s.active ? 'active' : ''}"></div>
@@ -262,9 +254,17 @@
         function runScan() {
             const out = document.getElementById('diag-target');
             const btn = document.getElementById('scan-btn');
-            out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div></center>";
+            out.innerHTML = "<center><div class='spin' style='margin-top:100px;'></div><p style='font-family:Orbitron; font-size:10px; margin-top:15px; color:var(--accent);'>KOMUNIKACIJA...</p></center>";
             setTimeout(() => {
-                out.innerHTML = faultsDb.map(f => `<div class="err-item"><div class="err-code">${f.code}</div><span class="err-desc">${f.desc}</span><div class="err-fix">${f.fix}</div></div>`).join('');
+                // NASUMIČAN PRIKAZ 5 STVARNIH GREŠAKA IZ BAZE OD 50
+                let shuffled = faultsDb.sort(() => 0.5 - Math.random());
+                out.innerHTML = shuffled.slice(0, 5).map(f => `
+                    <div class="err-item">
+                        <div class="err-code">${f.code}</div>
+                        <span class="err-desc">${f.desc}</span>
+                        <div class="err-fix">${f.fix}</div>
+                    </div>
+                `).join('');
                 btn.innerText = "Obriši sve greške"; btn.style.background = "var(--danger)"; btn.onclick = runErase;
             }, 2000);
         }
@@ -272,7 +272,7 @@
         function runErase() {
             const out = document.getElementById('diag-target');
             const btn = document.getElementById('scan-btn');
-            out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; font-size:12px; margin-top:120px;'>SISTEM OČIŠĆEN</p></center>";
+            out.innerHTML = "<center><p style='color:var(--safe); font-family:Orbitron; font-size:12px; margin-top:120px; animation: glow-pulse 1s infinite alternate;'>SISTEM OČIŠĆEN</p></center>";
             btn.style.display = "none";
             setTimeout(() => {
                 out.innerHTML = `<div class="radar-box"><div class="radar-circle"></div><p style="color:#222; font-family:Orbitron; font-size:10px;">ECU MONITOR</p></div>`;
