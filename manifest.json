@@ -1,17 +1,23 @@
 {
   "short_name": "DCS PRO",
-  "name": "DAX CAR SCAN",
+  "name": "DAX CAR SCAN PRO",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3233/3233951.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2061/2061956.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2061/2061956.png",
+      "type": "image/png",
+      "sizes": "192x192"
     }
   ],
-  "start_url": ".",
+  "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#000000",
-  "background_color": "#000000"
+  "background_color": "#000000",
+  "description": "Profesionalni OBD2 dijagnostički alat za Vgate iCar Pro"
 }
