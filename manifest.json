@@ -1,19 +1,18 @@
 {
-  "id": "dcs-pro-v60",
+  "name": "DCS PRO v60",
   "short_name": "DCS PRO",
-  "name": "DAX CAR SCAN PRO",
-  "description": "Profesionalna dijagnostika za Vgate iCar Pro",
+  "description": "Profesionalna dijagnostika",
+  "id": "/index.html",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "https://i.ibb.co/Lhb8Y6H/dcs-icon.png",
-      "type": "image/png",
       "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "start_url": "/index.html",
-  "display": "standalone",
-  "orientation": "portrait",
-  "theme_color": "#000000",
-  "background_color": "#000000"
+  ]
 }
