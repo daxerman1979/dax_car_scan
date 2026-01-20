@@ -1,11 +1,22 @@
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open('dcs-v1').then((cache) => cache.addAll(['/index.html', '/manifest.json']))
+const CACHE_NAME = 'dcs-v1';
+const assets = [
+  './',
+  './index.html',
+  './manifest.json'
+];
+
+self.addEventListener('install', evt => {
+  evt.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(assets);
+    })
   );
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
+self.addEventListener('fetch', evt => {
+  evt.respondWith(
+    caches.match(evt.request).then(cacheRes => {
+      return cacheRes || fetch(evt.request);
+    })
   );
 });
