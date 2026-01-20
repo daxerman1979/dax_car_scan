@@ -5,7 +5,6 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/Lhb8Y6H/dcs-icon.png">
     <title>DCS PRO v60</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
@@ -17,7 +16,9 @@
         #start-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; transition: 0.5s ease; }
         .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
         .vin-bar { width: 100%; padding: 12px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 8px; color: #666; position: fixed; top: 0; z-index: 2000; }
-        .logo { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; letter-spacing: 10px; margin-bottom: 30px; }
+        
+        /* Tekstualni logo umesto slike */
+        .logo { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; letter-spacing: 10px; margin-bottom: 30px; color: var(--accent); text-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
         
         .btn { width: 100%; max-width: 300px; padding: 20px; margin: 10px 0; border-radius: 15px; font-family: 'Orbitron'; font-size: 13px; font-weight: 900; cursor: pointer; text-transform: uppercase; border: none; z-index: 100; transition: 0.3s; }
         .btn-primary { background: var(--accent); color: #000; }
@@ -126,7 +127,6 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            console.log("Dozvola za instalaciju spremna.");
         });
 
         async function installApp() {
