@@ -187,7 +187,41 @@
             setTimeout(() => {
                 document.getElementById('bt-loader').style.display = 'none';
                 document.getElementById('diag-target').innerHTML = `<h2 style="color:var(--safe); margin-top:50px;">USPESNO OBRISANO</h2>`;
-                document.getElementById('scan-btn').style.display = 'none';
+// PWA Detektor - Ispisuje status na ekranu
+window.addEventListener('load', () => {
+    const debugDiv = document.createElement('div');
+    debugDiv.style = "position:fixed; bottom:80px; left:10px; right:10px; background:rgba(0,0,0,0.8); color:white; font-size:10px; padding:10px; z-index:9999; border:1px solid #333; font-family:monospace;";
+    debugDiv.innerHTML = "<b style='color:var(--accent)'>PWA STATUS:</b><br>";
+    document.body.appendChild(debugDiv);
+
+    const check = (name, condition) => {
+        debugDiv.innerHTML += `${name}: ${condition ? '<span style="color:green">OK</span>' : '<span style="color:red">GRESKA</span>'}<br>`;
+    };
+
+    // 1. Provera HTTPS
+    check("HTTPS", window.location.protocol === 'https:');
+
+    // 2. Provera Manifesta
+    const manifest = document.querySelector('link[rel="manifest"]');
+    check("MANIFEST LINK", !!manifest);
+
+    // 3. Provera Service Workera
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then(reg => {
+            check("SW REGISTROVAN", !!reg);
+            if(reg) check("SW AKTIVAN", reg.active !== null);
+        });
+    } else {
+        check("SW PODRSKA", false);
+    }
+
+    // 4. Provera Ikonice (da li link radi)
+    const img = new Image();
+    img.src = "https://i.ibb.co/Lhb8Y6H/dcs-icon.png";
+    img.onload = () => check("IKONICA UCITANA", true);
+    img.onerror = () => check("IKONICA UCITANA", false);
+});
+          document.getElementById('scan-btn').style.display = 'none';
             }, 2000);
         }
 
