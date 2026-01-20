@@ -33,7 +33,6 @@
         #view-slider { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
         .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 75px 15px 110px 15px; }
         
-        /* Centralna zona za obavestenja */
         #diag-target { flex-grow: 1; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .scroll-area { flex-grow: 1; overflow-y: auto; width: 100%; padding-bottom: 20px; }
 
@@ -130,7 +129,6 @@
             { id: 'ambient', label: 'Spoljna Temp', unit: '°C', cmd: '0146', min: -20, max: 45, n: 'Spoljna temp.', f: 'Senzor na braniku.', active: true }
         ];
 
-        // ADD TO HOME SCREEN LOGIKA
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -141,9 +139,7 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    document.getElementById('install-btn').style.display = 'none';
-                }
+                if (outcome === 'accepted') document.getElementById('install-btn').style.display = 'none';
                 deferredPrompt = null;
             }
         }
@@ -176,9 +172,7 @@
         }
 
         function moveNav(dir) {
-            currentView += dir;
-            if (currentView < 0) currentView = 0;
-            if (currentView > 2) currentView = 2;
+            currentView = Math.max(0, Math.min(2, currentView + dir));
             document.getElementById('view-slider').style.transform = `translateX(-${currentView * 100}vw)`;
         }
 
@@ -244,7 +238,7 @@
                 document.getElementById('bt-loader').style.display = 'none';
                 document.getElementById('diag-target').innerHTML = `<div style="background:#150000; padding:25px; border-radius:25px; border:1px solid red; text-align:left;"><h3 style="color:red; font-family:Orbitron;">P0420 DETEKTOVAN</h3><p style="font-size:12px; color:#fff;">Efikasnost katalizatora niska. Check Engine lampica aktivna.</p></div>`;
                 const btn = document.getElementById('scan-btn');
-                btn.innerText = "OBRIŠI GREŠKU"; btn.style.background = "var(--danger)"; btn.onclick = realErase;
+                btn.innerText = "OBRISI GRESKU"; btn.style.background = "var(--danger)"; btn.onclick = realErase;
             }, 2000);
         }
 
@@ -254,7 +248,7 @@
             await sendRaw("04");
             setTimeout(() => {
                 document.getElementById('bt-loader').style.display = 'none';
-                // Poruka je sada na sredini jer diag-target ima flexbox centriranje
+                // Centriranje postignuto preko flexboxa u CSS-u za #diag-target
                 document.getElementById('diag-target').innerHTML = "<h2 style='color:var(--safe); font-family:Orbitron; margin:0;'>USPESNO OBRISANO</h2>";
                 document.getElementById('scan-btn').style.display = "none";
                 setTimeout(() => {
@@ -269,19 +263,14 @@
         function hTM(e) {
             let diff = tsX - e.touches[0].clientX;
             if (Math.abs(diff) > 80) {
-                if (diff > 0 && currentView < 2) currentView++; else if (diff < 0 && currentView > 0) currentView--;
-                document.getElementById('view-slider').style.transform = `translateX(-${currentView * 100}vw)`;
+                moveNav(diff > 0 ? 1 : -1);
                 tsX = e.touches[0].clientX;
             }
         }
         
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').then(reg => {
-              console.log('DCS PRO spreman za offline rad.', reg.scope);
-            }).catch(err => {
-              console.log('Greska pri registraciji offline moda:', err);
-            });
+            navigator.serviceWorker.register('sw.js');
           });
         }
     </script>
