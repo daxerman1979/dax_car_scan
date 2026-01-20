@@ -5,8 +5,8 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2061/2061956.png">
-    <title>DCS PRO v58</title>
+    <link rel="apple-touch-icon" href="https://i.ibb.co/Lhb8Y6H/dcs-icon.png">
+    <title>DCS PRO v60</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -16,7 +16,6 @@
         
         #start-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; transition: 0.5s ease; }
         .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-
         .vin-bar { width: 100%; padding: 12px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 8px; color: #666; position: fixed; top: 0; z-index: 2000; }
         .logo { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; letter-spacing: 10px; margin-bottom: 30px; }
         
@@ -24,17 +23,17 @@
         .btn-primary { background: var(--accent); color: #000; }
         .btn-secondary { background: #111; color: #fff; border: 1px solid #222; }
 
-        /* CHECKBOX ZA UREĐAJE */
         .device-selector { display: flex; align-items: center; margin-bottom: 20px; cursor: pointer; }
         .device-selector span { font-family: 'Orbitron'; font-size: 10px; margin-left: 10px; color: #fff; }
-        .check-box-small { width: 22px; height: 22px; border: 2px solid var(--accent); border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .check-box-small { width: 22px; height: 22px; border: 2px solid var(--accent); border-radius: 4px; display: flex; align-items: center; justify-content: center; }
         .check-box-small.active { background: var(--accent); }
-        .check-box-small.active::after { content: '✓'; color: #000; font-size: 14px; font-weight: 900; }
+        .check-box-small.active::after { content: '✓'; color: #000; font-weight: 900; }
 
         #view-slider { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
         .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 75px 15px 110px 15px; }
         .scroll-area { flex-grow: 1; overflow-y: auto; width: 100%; padding-bottom: 20px; }
 
+        /* KARTICE */
         .card { width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; cursor: pointer; }
         .card-label { font-size: 10px; font-weight: 900; color: #FFF; text-transform: uppercase; z-index: 5; }
         .card-val { font-family: 'Orbitron'; font-size: 28px; font-weight: 900; color: #fff; z-index: 5; }
@@ -46,18 +45,20 @@
         .card.danger { border-color: var(--danger); background: #150505; border-left: 8px solid var(--danger); }
         .card.danger .card-val { color: var(--danger); }
         .card.danger .wave { background: linear-gradient(90deg, transparent, rgba(255, 17, 17, 0.2), transparent); animation: wave-move 1.5s infinite linear; }
-        
         @keyframes wave-move { 0% { transform: translateX(-100%) skewX(-25deg); } 100% { transform: translateX(600%) skewX(-25deg); } }
 
+        /* NAV STRELICE */
+        .nav-arrows { position: fixed; bottom: 10px; width: 100%; display: flex; justify-content: space-between; padding: 0 40px; z-index: 5000; }
+        .arrow { font-family: 'Orbitron'; font-size: 30px; font-weight: 900; color: var(--accent); cursor: pointer; opacity: 0.5; transition: 0.3s; padding: 10px; }
+        .arrow:hover { opacity: 1; text-shadow: 0 0 15px var(--accent); }
+
         .settings-item { background: #0a0a0a; padding: 18px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #111; width: 100%; }
-        .settings-item span { font-family: 'Orbitron'; font-size: 11px; font-weight: 900; color: #fff; }
-        .check-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; }
+        .check-box { width: 22px; height: 22px; border: 2px solid var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
         .check-box.active { background: var(--accent); }
         .check-box.active::after { content: '✓'; color: #000; font-weight: 900; }
 
         #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); display: none; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
         .modal-box { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 400px; padding: 30px; text-align: center; }
-
         #bt-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); display: none; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
         .spin { width: 45px; height: 45px; border: 4px solid #111; border-top: 4px solid var(--accent); border-radius: 50%; animation: rot 1s linear infinite; }
         @keyframes rot { to { transform: rotate(360deg); } }
@@ -70,38 +71,22 @@
 
     <div id="start-screen">
         <div class="logo">DCS</div>
-        
-        <div class="device-selector" onclick="toggleDeviceFilter()">
-            <div id="device-check" class="check-box-small active"></div>
-            <span id="device-text">SAMO OBD2 UREĐAJI</span>
-        </div>
-
+        <div class="device-selector" onclick="toggleDeviceFilter()"><div id="device-check" class="check-box-small active"></div><span id="device-text">SAMO OBD2 UREĐAJI</span></div>
         <button class="btn btn-primary" onclick="connectOBD()">POVEŽI ADAPTER</button>
         <button class="btn btn-secondary" onclick="launch(true)">SIMULACIJA (TEST)</button>
-        <button id="install-btn" class="btn btn-secondary" style="display:none; font-size:10px;">INSTALIRAJ DCS PRO</button>
     </div>
 
-    <div class="vin-bar">
-        <span>VIN: <b id="vin-val">DCS_v58_PRO</b></span>
-        <span>STATUS: <b id="status-tag" style="color:var(--danger)">OFFLINE</b></span>
-    </div>
+    <div class="vin-bar"><span>VIN: <b id="vin-val">DCS_v60_PRO</b></span><span>STATUS: <b id="status-tag" style="color:var(--danger)">OFFLINE</b></span></div>
 
     <div id="view-slider">
-        <div class="page"><div class="scroll-area" id="list-target"></div><div class="nav-hint">SWIPE LEVO ZA DIJAGNOSTIKU</div></div>
-        
-        <div class="page">
-            <div class="scroll-area" id="diag-target">
-                <center><p style="color:#222; font-family:Orbitron; margin-top:100px;">SKENIRANJE SPREMNO</p></center>
-            </div>
-            <button class="btn btn-primary" id="scan-btn" onclick="realScan()">Skeniraj vozilo</button>
-            <div class="nav-hint">LEVO: PODEŠAVANJA | DESNO: TABLA</div>
-        </div>
+        <div class="page"><div class="scroll-area" id="list-target"></div></div>
+        <div class="page"><div class="scroll-area" id="diag-target"><center><p style="color:#222; font-family:Orbitron; margin-top:100px;">SKENIRANJE SPREMNO</p></center></div><button class="btn btn-primary" id="scan-btn" onclick="realScan()">Skeniraj vozilo</button></div>
+        <div class="page"><div style="font-family:Orbitron; font-size:12px; color:var(--accent); margin-bottom:20px;">IZBOR 20 SENZORA</div><div class="scroll-area" id="settings-target"></div></div>
+    </div>
 
-        <div class="page">
-            <div style="font-family:Orbitron; font-size:12px; color:var(--accent); margin-bottom:20px;">IZBOR 20 SENZORA</div>
-            <div class="scroll-area" id="settings-target"></div>
-            <div class="nav-hint">SWIPE DESNO ZA DIJAGNOSTIKU</div>
-        </div>
+    <div class="nav-arrows">
+        <div class="arrow" onclick="moveNav(-1)">&lt;</div>
+        <div class="arrow" onclick="moveNav(1)">&gt;</div>
     </div>
 
     <div id="details-modal" onclick="this.style.display='none'">
@@ -115,7 +100,6 @@
 
     <script>
         let tsX = 0, currentView = 0, obdChar, isLive = false, onlyOBD = true;
-
         const sensorDb = [
             { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', cmd: '010C', min: 0, max: 5000, n: '750-900 RPM', f: 'Dizne ili senzor radilice.', active: true },
             { id: 'brz', label: 'Brzina', unit: 'KMH', cmd: '010D', min: 0, max: 135, n: 'U granicama zakona.', f: 'Senzor brzine (ABS).', active: true },
@@ -143,26 +127,16 @@
             const check = document.getElementById('device-check');
             const txt = document.getElementById('device-text');
             onlyOBD = !onlyOBD;
-            if(onlyOBD) {
-                check.classList.add('active');
-                txt.innerText = "SAMO OBD2 UREĐAJI";
-            } else {
-                check.classList.remove('active');
-                txt.innerText = "SVI BLUETOOTH UREĐAJI";
-            }
+            check.classList.toggle('active');
+            txt.innerText = onlyOBD ? "SAMO OBD2 UREĐAJI" : "SVI BLUETOOTH UREĐAJI";
         }
 
         async function connectOBD() {
             document.getElementById('bt-loader').style.display = 'flex';
             document.getElementById('loader-text').innerText = "POVEZIVANJE...";
             try {
-                let options = { acceptAllDevices: true, optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] };
-                if (onlyOBD) {
-                    options = { 
-                        filters: [{ services: ['00001101-0000-1000-8000-00805f9b34fb'] }],
-                        optionalServices: ['00001101-0000-1000-8000-00805f9b34fb']
-                    };
-                }
+                let options = { acceptAllDevices: !onlyOBD, optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] };
+                if (onlyOBD) options.filters = [{ services: ['00001101-0000-1000-8000-00805f9b34fb'] }];
                 const device = await navigator.bluetooth.requestDevice(options);
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService('00001101-0000-1000-8000-00805f9b34fb');
@@ -176,8 +150,14 @@
             document.getElementById('bt-loader').style.display = 'none';
         }
 
-        async function sendRaw(cmd) { if (obdChar) await obdChar.writeValue(new TextEncoder().encode(cmd + '\r')); }
+        function moveNav(dir) {
+            currentView += dir;
+            if (currentView < 0) currentView = 0;
+            if (currentView > 2) currentView = 2;
+            document.getElementById('view-slider').style.transform = `translateX(-${currentView * 100}vw)`;
+        }
 
+        async function sendRaw(cmd) { if (obdChar) await obdChar.writeValue(new TextEncoder().encode(cmd + '\r')); }
         async function startLiveLoop() {
             if (!isLive) return;
             for (let s of sensorDb) { if(s.active) { await sendRaw(s.cmd); updateUI(s.id, getVal(s.id)); await new Promise(r => setTimeout(r, 120)); } }
@@ -201,7 +181,10 @@
         function launch(isSim) {
             document.getElementById('start-screen').classList.add('gone');
             renderDashboard(); renderSettings();
-            if(isSim) setInterval(() => { sensorDb.forEach(s => { if(s.active) updateUI(s.id, getVal(s.id)); }); }, 1000);
+            if(isSim) {
+                document.getElementById('status-tag').innerText = "SIMULACIJA";
+                setInterval(() => { sensorDb.forEach(s => { if(s.active) updateUI(s.id, getVal(s.id)); }); }, 1000);
+            }
         }
 
         function renderDashboard() {
@@ -220,7 +203,6 @@
         }
 
         function toggleSensor(id) { const s = sensorDb.find(x => x.id === id); if(s) { s.active = !s.active; renderDashboard(); renderSettings(); } }
-
         function showHelp(id) {
             const s = sensorDb.find(x => x.id === id);
             document.getElementById('m-title').innerText = s.label.toUpperCase();
@@ -235,7 +217,7 @@
             await sendRaw("03");
             setTimeout(() => {
                 document.getElementById('bt-loader').style.display = 'none';
-                document.getElementById('diag-target').innerHTML = `<div style="background:#150000; padding:25px; border-radius:25px; border:1px solid red; text-align:left;"><h3 style="color:red; font-family:Orbitron;">P0420 DETEKTOVAN</h3><p style="font-size:12px; color:#fff;">Efikasnost katalizatora ispod granice. Check Engine lampica aktivna.</p></div>`;
+                document.getElementById('diag-target').innerHTML = `<div style="background:#150000; padding:25px; border-radius:25px; border:1px solid red; text-align:left;"><h3 style="color:red; font-family:Orbitron;">P0420 DETEKTOVAN</h3><p style="font-size:12px; color:#fff;">Efikasnost katalizatora niska. Check Engine lampica aktivna.</p></div>`;
                 const btn = document.getElementById('scan-btn');
                 btn.innerText = "OBRIŠI GREŠKU"; btn.style.background = "var(--danger)"; btn.onclick = realErase;
             }, 2000);
