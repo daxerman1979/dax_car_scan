@@ -5,6 +5,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/Lhb8Y6H/dcs-icon.png">
     <title>DCS PRO v60</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     
@@ -16,14 +17,12 @@
         #start-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; transition: 0.5s ease; }
         .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
         .vin-bar { width: 100%; padding: 12px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 8px; color: #666; position: fixed; top: 0; z-index: 2000; }
-        
-        /* Tekstualni logo umesto slike */
-        .logo { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; letter-spacing: 10px; margin-bottom: 30px; color: var(--accent); text-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
+        .logo { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; letter-spacing: 10px; margin-bottom: 30px; }
         
         .btn { width: 100%; max-width: 300px; padding: 20px; margin: 10px 0; border-radius: 15px; font-family: 'Orbitron'; font-size: 13px; font-weight: 900; cursor: pointer; text-transform: uppercase; border: none; z-index: 100; transition: 0.3s; }
         .btn-primary { background: var(--accent); color: #000; }
         .btn-secondary { background: #111; color: #fff; border: 1px solid #222; }
-        #install-btn { display: block; background: #fff; color: #000; border: 2px solid var(--accent); }
+        #install-btn { background: #fff; color: #000; border: 2px solid var(--accent); margin-top: 10px; }
 
         .device-selector { display: flex; align-items: center; margin-bottom: 20px; cursor: pointer; }
         .device-selector span { font-family: 'Orbitron'; font-size: 10px; margin-left: 10px; color: #fff; }
@@ -37,29 +36,15 @@
         
         #diag-target { flex-grow: 1; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
 
-        .card { width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; cursor: pointer; }
+        .card { width: 100%; background: #080808; border: 1px solid #151515; border-radius: 25px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
         .card-label { font-size: 10px; font-weight: 900; color: #FFF; text-transform: uppercase; z-index: 5; }
         .card-val { font-family: 'Orbitron'; font-size: 28px; font-weight: 900; color: #fff; z-index: 5; }
         .card-unit { font-family: 'Orbitron'; font-size: 11px; color: #444; margin-left: 5px; }
 
-        .wave { position: absolute; left: -150px; top: 0; height: 100%; width: 200px; skewX: -25deg; pointer-events: none; z-index: 1; }
-        .card.safe { border-left: 8px solid var(--safe); }
-        .card.safe .wave { background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent); animation: wave-move 4s infinite linear; }
-        .card.danger { border-color: var(--danger); background: #150505; border-left: 8px solid var(--danger); }
-        .card.danger .card-val { color: var(--danger); }
-        .card.danger .wave { background: linear-gradient(90deg, transparent, rgba(255, 17, 17, 0.2), transparent); animation: wave-move 1.5s infinite linear; }
-        @keyframes wave-move { 0% { transform: translateX(-100%) skewX(-25deg); } 100% { transform: translateX(600%) skewX(-25deg); } }
-
-        .nav-arrows { position: fixed; bottom: 10px; width: 100%; display: flex; justify-content: space-between; padding: 0 40px; z-index: 5000; }
-        .arrow { font-family: 'Orbitron'; font-size: 30px; font-weight: 900; color: var(--accent); cursor: pointer; opacity: 0.5; transition: 0.3s; padding: 10px; }
-
         .settings-item { background: #0a0a0a; padding: 18px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #111; width: 100%; }
         .check-box { width: 22px; height: 22px; border: 2px solid var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
         .check-box.active { background: var(--accent); }
-        .check-box.active::after { content: '✓'; color: #000; font-weight: 900; }
-
-        #details-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); display: none; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
-        .modal-box { background: #0c0c0c; border: 1px solid #222; border-radius: 30px; width: 100%; max-width: 400px; padding: 30px; text-align: center; }
+        
         #bt-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); display: none; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
         .spin { width: 45px; height: 45px; border: 4px solid #111; border-top: 4px solid var(--accent); border-radius: 50%; animation: rot 1s linear infinite; }
         @keyframes rot { to { transform: rotate(360deg); } }
@@ -67,14 +52,14 @@
 </head>
 <body ontouchstart="hTS(event)" ontouchmove="hTM(event)">
 
-    <div id="bt-loader"><div class="spin"></div><p id="loader-text" style="font-family:Orbitron; font-size:10px; margin-top:20px; color:var(--accent);"></p></div>
+    <div id="bt-loader"><div class="spin"></div><p id="loader-text" style="font-family:Orbitron; margin-top:20px; color:var(--accent);"></p></div>
 
     <div id="start-screen">
         <div class="logo">DCS</div>
         <div class="device-selector" onclick="toggleDeviceFilter()"><div id="device-check" class="check-box-small active"></div><span id="device-text">SAMO OBD2 UREDJAJI</span></div>
         <button class="btn btn-primary" onclick="connectOBD()">POVEZI ADAPTER</button>
         <button class="btn btn-secondary" onclick="launch(true)">SIMULACIJA (TEST)</button>
-        <button id="install-btn" class="btn" onclick="installApp()">INSTALIRAJ APLIKACIJU</button>
+        <button id="install-btn" class="btn" onclick="installApp()">INSTALIRAJ</button>
     </div>
 
     <div class="vin-bar"><span>VIN: <b id="vin-val">DCS_v60_PRO</b></span><span>STATUS: <b id="status-tag" style="color:var(--danger)">OFFLINE</b></span></div>
@@ -82,130 +67,79 @@
     <div id="view-slider">
         <div class="page"><div class="scroll-area" id="list-target"></div></div>
         <div class="page"><div id="diag-target"><center><p style="color:#222; font-family:Orbitron;">SKENIRANJE SPREMNO</p></center></div><button class="btn btn-primary" id="scan-btn" onclick="realScan()">Skeniraj vozilo</button></div>
-        <div class="page"><div style="font-family:Orbitron; font-size:12px; color:var(--accent); margin-bottom:20px;">IZBOR 20 SENZORA</div><div class="scroll-area" id="settings-target"></div></div>
-    </div>
-
-    <div class="nav-arrows">
-        <div class="arrow" onclick="moveNav(-1)">&lt;</div>
-        <div class="arrow" onclick="moveNav(1)">&gt;</div>
-    </div>
-
-    <div id="details-modal" onclick="this.style.display='none'">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <div id="m-title" style="font-family:Orbitron; color:var(--accent); font-size:20px; margin-bottom:20px;"></div>
-            <div style="background:#111; padding:20px; border-radius:15px; text-align:left; margin-bottom:15px;"><div style="color:var(--safe); font-size:10px; font-weight:900; margin-bottom:5px;">NORMALA:</div><div id="m-norm" style="color:#fff; font-size:14px;"></div></div>
-            <div style="background:#111; padding:20px; border-radius:15px; text-align:left;"><div style="color:var(--danger); font-size:10px; font-weight:900; margin-bottom:5px;">MOGUCI KVAR:</div><div id="m-fault" style="color:#fff; font-size:14px;"></div></div>
-            <button class="btn btn-primary" style="margin-top:20px; width:100%;" onclick="document.getElementById('details-modal').style.display='none'">ZATVORI</button>
-        </div>
+        <div class="page"><div style="font-family:Orbitron; font-size:12px; color:var(--accent); margin-bottom:20px;">IZBOR SENZORA</div><div class="scroll-area" id="settings-target"></div></div>
     </div>
 
     <script>
         let tsX = 0, currentView = 0, obdChar, isLive = false, onlyOBD = true, deferredPrompt;
+        
         const sensorDb = [
-            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', cmd: '010C', min: 0, max: 5000, n: '750-900 RPM', f: 'Dizne ili senzor radilice.', active: true },
-            { id: 'brz', label: 'Brzina', unit: 'KMH', cmd: '010D', min: 0, max: 135, n: 'U granicama zakona.', f: 'Senzor brzine (ABS).', active: true },
-            { id: 'aku', label: 'Napon Akumulatora', unit: 'V', cmd: '0142', min: 13.0, max: 14.8, n: '13.8V-14.4V', f: 'Alternator ne puni.', active: true },
-            { id: 'temp', label: 'Rashladna Tecnost', unit: '°C', cmd: '0105', min: 75, max: 105, n: '85°C-95°C', f: 'Termostat ili antifriz.', active: true },
-            { id: 'load', label: 'Opterecenje', unit: '%', cmd: '0104', min: 0, max: 85, n: '15%-25% Ler', f: 'Mehanicki otpor.', active: true },
-            { id: 'turbo', label: 'Pritisak Turba', unit: 'Bar', cmd: '010B', min: 0, max: 1.8, n: '1.2-1.6 Bar', f: 'Curenje creva/kvar turbine.', active: true },
-            { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', cmd: '0110', min: 2, max: 150, n: '3-6 g/s Ler', f: 'MAF protokomer.', active: true },
-            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', cmd: '0123', min: 250, max: 1600, n: '250+ Bar', f: 'Pumpa visokog pritiska.', active: true },
-            { id: 'throttle', label: 'Polozaj Gasa', unit: '%', cmd: '0111', min: 0, max: 95, n: '0-100%', f: 'Senzor pedale gasa.', active: true },
-            { id: 'oil_t', label: 'Temp. Ulja', unit: '°C', cmd: '015C', min: 85, max: 115, n: '90°C-105°C', f: 'Hladnjak ulja/staro ulje.', active: true },
-            { id: 'iat', label: 'Temp. Usisa', unit: '°C', cmd: '010F', min: 10, max: 55, n: 'Spoljna + 15°C', f: 'Senzor usisa ili interkuler.', active: true },
-            { id: 'dpf', label: 'DPF Zasicenje', unit: '%', cmd: '017A', min: 0, max: 45, n: '<40%', f: 'Potrebna regeneracija.', active: true },
-            { id: 'egr', label: 'EGR Greska', unit: '%', cmd: '012D', min: 0, max: 10, n: 'Ispod 5%', f: 'EGR ventil zaprljan.', active: true },
-            { id: 'baro', label: 'Atmosf. Pritisak', unit: 'kPa', cmd: '0133', min: 95, max: 105, n: 'Oko 100 kPa', f: 'Senzor pritiska.', active: true },
-            { id: 'stft', label: 'Fuel Trim (K)', unit: '%', cmd: '0106', min: -8, max: 8, n: 'Blizu 0%', f: 'Fals vazduh ili losa smesa.', active: true },
-            { id: 'ltft', label: 'Fuel Trim (D)', unit: '%', cmd: '0107', min: -10, max: 10, n: 'Blizu 0%', f: 'Dugorocna greska sagorevanja.', active: true },
-            { id: 'timing', label: 'Ugao Paljenja', unit: '°', cmd: '010E', min: -5, max: 40, n: 'Varijabilno', f: 'Lose gorivo ili senzor.', active: true },
-            { id: 'run_t', label: 'Vreme Rada', unit: 's', cmd: '011F', min: 0, max: 3600, n: 'Od starta', f: 'Nije kvar.', active: true },
-            { id: 'evap', label: 'EVAP Pritisak', unit: 'Pa', cmd: '0132', min: -500, max: 500, n: 'Oko 0', f: 'Senzor isparenja goriva.', active: true },
-            { id: 'ambient', label: 'Spoljna Temp', unit: '°C', cmd: '0146', min: -20, max: 45, n: 'Spoljna temp.', f: 'Senzor na braniku.', active: true }
+            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', cmd: '010C', min: 0, max: 5000, active: true },
+            { id: 'brz', label: 'Brzina', unit: 'KMH', cmd: '010D', min: 0, max: 135, active: true },
+            { id: 'aku', label: 'Napon Akumulatora', unit: 'V', cmd: '0142', min: 13.0, max: 14.8, active: true },
+            { id: 'temp', label: 'Rashladna Tecnost', unit: '°C', cmd: '0105', min: 75, max: 105, active: true },
+            { id: 'load', label: 'Opterecenje', unit: '%', cmd: '0104', min: 0, max: 85, active: true },
+            { id: 'turbo', label: 'Pritisak Turba', unit: 'Bar', cmd: '010B', min: 0, max: 1.8, active: true },
+            { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', cmd: '0110', min: 2, max: 150, active: true },
+            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', cmd: '0123', min: 250, max: 1600, active: true },
+            { id: 'throttle', label: 'Polozaj Gasa', unit: '%', cmd: '0111', min: 0, max: 95, active: true },
+            { id: 'oil_t', label: 'Temp. Ulja', unit: '°C', cmd: '015C', min: 85, max: 115, active: true },
+            { id: 'iat', label: 'Temp. Usisa', unit: '°C', cmd: '010F', min: 10, max: 55, active: true },
+            { id: 'dpf', label: 'DPF Zasicenje', unit: '%', cmd: '017A', min: 0, max: 45, active: true },
+            { id: 'egr', label: 'EGR Greska', unit: '%', cmd: '012D', min: 0, max: 10, active: true },
+            { id: 'baro', label: 'Atmosf. Pritisak', unit: 'kPa', cmd: '0133', min: 95, max: 105, active: true },
+            { id: 'stft', label: 'Fuel Trim (K)', unit: '%', cmd: '0106', min: -8, max: 8, active: true },
+            { id: 'ltft', label: 'Fuel Trim (D)', unit: '%', cmd: '0107', min: -10, max: 10, active: true },
+            { id: 'timing', label: 'Ugao Paljenja', unit: '°', cmd: '010E', min: -5, max: 40, active: true },
+            { id: 'run_t', label: 'Vreme Rada', unit: 's', cmd: '011F', min: 0, max: 3600, active: true },
+            { id: 'evap', label: 'EVAP Pritisak', unit: 'Pa', cmd: '0132', min: -500, max: 500, active: true },
+            { id: 'ambient', label: 'Spoljna Temp', unit: '°C', cmd: '0146', min: -20, max: 45, active: true }
         ];
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
+            e.preventDefault(); deferredPrompt = e;
         });
 
         async function installApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') document.getElementById('install-btn').style.display = 'none';
                 deferredPrompt = null;
             } else {
-                alert("Ako ne vidite prozor, otvorite Chrome meni (3 tackice) i kliknite na 'Install App'.");
+                alert("Koristite Chrome meni (3 tackice) -> Install App.");
             }
         }
 
         function toggleDeviceFilter() {
-            const check = document.getElementById('device-check');
-            const txt = document.getElementById('device-text');
             onlyOBD = !onlyOBD;
-            check.classList.toggle('active');
-            txt.innerText = onlyOBD ? "SAMO OBD2 UREDJAJI" : "SVI BLUETOOTH UREDJAJI";
+            document.getElementById('device-check').classList.toggle('active');
+            document.getElementById('device-text').innerText = onlyOBD ? "SAMO OBD2 UREDJAJI" : "SVI UREDJAJI";
         }
 
         async function connectOBD() {
             document.getElementById('bt-loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "POVEZIVANJE...";
             try {
-                let options = { acceptAllDevices: !onlyOBD, optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] };
-                if (onlyOBD) options.filters = [{ services: ['00001101-0000-1000-8000-00805f9b34fb'] }];
-                const device = await navigator.bluetooth.requestDevice(options);
-                const server = await device.gatt.connect();
+                let opts = { acceptAllDevices: !onlyOBD, optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] };
+                if (onlyOBD) opts.filters = [{ services: ['00001101-0000-1000-8000-00805f9b34fb'] }];
+                const dev = await navigator.bluetooth.requestDevice(opts);
+                const server = await dev.gatt.connect();
                 const service = await server.getPrimaryService('00001101-0000-1000-8000-00805f9b34fb');
                 const chars = await service.getCharacteristics();
                 obdChar = chars[0];
-                await sendRaw("ATZ"); await sendRaw("ATSP0");
-                document.getElementById('status-tag').innerText = "LIVE";
-                document.getElementById('status-tag').style.color = "var(--safe)";
                 isLive = true; launch(false); startLiveLoop();
             } catch (e) { console.log(e); }
             document.getElementById('bt-loader').style.display = 'none';
         }
 
-        function moveNav(dir) {
-            currentView = Math.max(0, Math.min(2, currentView + dir));
-            document.getElementById('view-slider').style.transform = `translateX(-${currentView * 100}vw)`;
-        }
-
-        async function sendRaw(cmd) { if (obdChar) await obdChar.writeValue(new TextEncoder().encode(cmd + '\r')); }
-        async function startLiveLoop() {
-            if (!isLive) return;
-            for (let s of sensorDb) { if(s.active) { await sendRaw(s.cmd); updateUI(s.id, getVal(s.id)); await new Promise(r => setTimeout(r, 120)); } }
-            requestAnimationFrame(startLiveLoop);
-        }
-
-        function getVal(id) {
-            if(id==='aku') return (Math.random() * 0.2 + 14.1).toFixed(1);
-            if(id==='rpm') return Math.floor(Math.random() * 50 + 850);
-            return Math.floor(Math.random() * 10 + 20);
-        }
-
-        function updateUI(id, val) {
-            const s = sensorDb.find(x => x.id === id);
-            const el = document.getElementById(id + '-val');
-            const card = document.getElementById('card-' + id);
-            if (el) el.innerText = val;
-            if (card) card.className = (val < s.min || val > s.max) ? 'card danger' : 'card safe';
-        }
-
         function launch(isSim) {
             document.getElementById('start-screen').classList.add('gone');
             renderDashboard(); renderSettings();
-            if(isSim) {
-                document.getElementById('status-tag').innerText = "SIMULACIJA";
-                setInterval(() => { sensorDb.forEach(s => { if(s.active) updateUI(s.id, getVal(s.id)); }); }, 1000);
-            }
+            if(isSim) setInterval(() => { sensorDb.forEach(s => updateUI(s.id, (Math.random()*10+20).toFixed(0))); }, 1000);
         }
 
         function renderDashboard() {
             document.getElementById('list-target').innerHTML = sensorDb.filter(s => s.active).map(s => `
-                <div id="card-${s.id}" class="card safe" onclick="showHelp('${s.id}')">
-                    <div class="wave"></div>
+                <div id="card-${s.id}" class="card">
                     <div><div class="card-label">${s.label}</div><div style="display:flex;align-items:baseline;"><span id="${s.id}-val" class="card-val">--</span><span class="card-unit">${s.unit}</span></div></div>
                 </div>
             `).join('');
@@ -217,41 +151,19 @@
             `).join('');
         }
 
-        function toggleSensor(id) { const s = sensorDb.find(x => x.id === id); if(s) { s.active = !s.active; renderDashboard(); renderSettings(); } }
-        function showHelp(id) {
+        function toggleSensor(id) {
             const s = sensorDb.find(x => x.id === id);
-            document.getElementById('m-title').innerText = s.label.toUpperCase();
-            document.getElementById('m-norm').innerText = s.n;
-            document.getElementById('m-fault').innerText = s.f;
-            document.getElementById('details-modal').style.display = 'flex';
+            if(s) { s.active = !s.active; renderDashboard(); renderSettings(); }
         }
 
-        async function realScan() {
-            document.getElementById('bt-loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "SKENIRANJE...";
-            await sendRaw("03");
-            setTimeout(() => {
-                document.getElementById('bt-loader').style.display = 'none';
-                document.getElementById('diag-target').innerHTML = `<div style="background:#150000; padding:25px; border-radius:25px; border:1px solid red; text-align:left;"><h3 style="color:red; font-family:Orbitron;">P0420 DETEKTOVAN</h3><p style="font-size:12px; color:#fff;">Efikasnost katalizatora niska. Check Engine lampica aktivna.</p></div>`;
-                const btn = document.getElementById('scan-btn');
-                btn.innerText = "OBRISI GRESKU"; btn.style.background = "var(--danger)"; btn.onclick = realErase;
-            }, 2000);
+        function updateUI(id, val) {
+            const el = document.getElementById(id + '-val');
+            if (el) el.innerText = val;
         }
 
-        async function realErase() {
-            document.getElementById('bt-loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "BRISANJE...";
-            await sendRaw("04");
-            setTimeout(() => {
-                document.getElementById('bt-loader').style.display = 'none';
-                document.getElementById('diag-target').innerHTML = "<center><h2 style='color:var(--safe); font-family:Orbitron; margin-top:100px;'>USPESNO OBRISANO</h2></center>";
-                document.getElementById('scan-btn').style.display = "none";
-                setTimeout(() => {
-                    document.getElementById('diag-target').innerHTML = `<center><p style="color:#222; font-family:Orbitron; margin-top:100px;">SKENIRANJE SPREMNO</p></center>`;
-                    const btn = document.getElementById('scan-btn');
-                    btn.innerText = "Skeniraj vozilo"; btn.style.background = "var(--accent)"; btn.style.display = "block"; btn.onclick = realScan;
-                }, 3000);
-            }, 3000);
+        function moveNav(dir) {
+            currentView = Math.max(0, Math.min(2, currentView + dir));
+            document.getElementById('view-slider').style.transform = `translateX(-${currentView * 100}vw)`;
         }
 
         function hTS(e) { tsX = e.touches[0].clientX; }
@@ -259,12 +171,27 @@
             let diff = tsX - e.touches[0].clientX;
             if (Math.abs(diff) > 80) { moveNav(diff > 0 ? 1 : -1); tsX = e.touches[0].clientX; }
         }
-        
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js');
-          });
+
+        async function realScan() {
+            document.getElementById('bt-loader').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('bt-loader').style.display = 'none';
+                document.getElementById('diag-target').innerHTML = `<div style="border:1px solid red; padding:20px; border-radius:20px;"><h3 style="color:red;">P0420 GRESKA</h3><p>Katalizator niska efikasnost.</p></div>`;
+                document.getElementById('scan-btn').innerText = "OBRISI GRESKU";
+                document.getElementById('scan-btn').onclick = realErase;
+            }, 2000);
         }
+
+        async function realErase() {
+            document.getElementById('bt-loader').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('bt-loader').style.display = 'none';
+                document.getElementById('diag-target').innerHTML = `<h2 style="color:var(--safe); margin-top:50px;">USPESNO OBRISANO</h2>`;
+                document.getElementById('scan-btn').style.display = 'none';
+            }, 2000);
+        }
+
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     </script>
 </body>
 </html>
