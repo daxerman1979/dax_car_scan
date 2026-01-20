@@ -7,17 +7,17 @@ const assets = [
   'https://i.ibb.co/Lhb8Y6H/dcs-icon.png'
 ];
 
-// Instalacija i čuvanje fajlova u memoriji
+// Instalacija i cuvanje fajlova u memoriji
 self.addEventListener('install', evt => {
   evt.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('Skladištenje fajlova za offline rad...');
+      console.log('Skladistenje fajlova za offline rad...');
       return cache.addAll(assets);
     })
   );
 });
 
-// Aktivacija i čišćenje stare memorije
+// Aktivacija i ciscenje stare memorije
 self.addEventListener('activate', evt => {
   evt.waitUntil(
     caches.keys().then(keys => {
@@ -29,7 +29,7 @@ self.addEventListener('activate', evt => {
   );
 });
 
-// Posluživanje fajlova kada nema interneta
+// Posluzivanje fajlova kada nema interneta
 self.addEventListener('fetch', evt => {
   evt.respondWith(
     caches.match(evt.request).then(cacheRes => {
