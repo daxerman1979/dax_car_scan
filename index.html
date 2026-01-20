@@ -31,6 +31,9 @@
 
         #view-slider { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
         .page { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; padding: 75px 15px 110px 15px; }
+        
+        /* Centriranje sadrzaja na diag-target stranici */
+        #diag-target { flex-grow: 1; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .scroll-area { flex-grow: 1; overflow-y: auto; width: 100%; padding-bottom: 20px; }
 
         /* KARTICE */
@@ -71,8 +74,8 @@
 
     <div id="start-screen">
         <div class="logo">DCS</div>
-        <div class="device-selector" onclick="toggleDeviceFilter()"><div id="device-check" class="check-box-small active"></div><span id="device-text">SAMO OBD2 UREĐAJI</span></div>
-        <button class="btn btn-primary" onclick="connectOBD()">POVEŽI ADAPTER</button>
+        <div class="device-selector" onclick="toggleDeviceFilter()"><div id="device-check" class="check-box-small active"></div><span id="device-text">SAMO OBD2 UREDJAJI</span></div>
+        <button class="btn btn-primary" onclick="connectOBD()">POVEZI ADAPTER</button>
         <button class="btn btn-secondary" onclick="launch(true)">SIMULACIJA (TEST)</button>
     </div>
 
@@ -80,7 +83,12 @@
 
     <div id="view-slider">
         <div class="page"><div class="scroll-area" id="list-target"></div></div>
-        <div class="page"><div class="scroll-area" id="diag-target"><center><p style="color:#222; font-family:Orbitron; margin-top:100px;">SKENIRANJE SPREMNO</p></center></div><button class="btn btn-primary" id="scan-btn" onclick="realScan()">Skeniraj vozilo</button></div>
+        <div class="page">
+            <div id="diag-target">
+                <p style="color:#222; font-family:Orbitron;">SKENIRANJE SPREMNO</p>
+            </div>
+            <button class="btn btn-primary" id="scan-btn" onclick="realScan()">Skeniraj vozilo</button>
+        </div>
         <div class="page"><div style="font-family:Orbitron; font-size:12px; color:var(--accent); margin-bottom:20px;">IZBOR 20 SENZORA</div><div class="scroll-area" id="settings-target"></div></div>
     </div>
 
@@ -93,7 +101,7 @@
         <div class="modal-box" onclick="event.stopPropagation()">
             <div id="m-title" style="font-family:Orbitron; color:var(--accent); font-size:20px; margin-bottom:20px;"></div>
             <div style="background:#111; padding:20px; border-radius:15px; text-align:left; margin-bottom:15px;"><div style="color:var(--safe); font-size:10px; font-weight:900; margin-bottom:5px;">NORMALA:</div><div id="m-norm" style="color:#fff; font-size:14px;"></div></div>
-            <div style="background:#111; padding:20px; border-radius:15px; text-align:left;"><div style="color:var(--danger); font-size:10px; font-weight:900; margin-bottom:5px;">MOGUĆI KVAR:</div><div id="m-fault" style="color:#fff; font-size:14px;"></div></div>
+            <div style="background:#111; padding:20px; border-radius:15px; text-align:left;"><div style="color:var(--danger); font-size:10px; font-weight:900; margin-bottom:5px;">MOGUCI KVAR:</div><div id="m-fault" style="color:#fff; font-size:14px;"></div></div>
             <button class="btn btn-primary" style="margin-top:20px; width:100%;" onclick="document.getElementById('details-modal').style.display='none'">ZATVORI</button>
         </div>
     </div>
@@ -104,20 +112,20 @@
             { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', cmd: '010C', min: 0, max: 5000, n: '750-900 RPM', f: 'Dizne ili senzor radilice.', active: true },
             { id: 'brz', label: 'Brzina', unit: 'KMH', cmd: '010D', min: 0, max: 135, n: 'U granicama zakona.', f: 'Senzor brzine (ABS).', active: true },
             { id: 'aku', label: 'Napon Akumulatora', unit: 'V', cmd: '0142', min: 13.0, max: 14.8, n: '13.8V-14.4V', f: 'Alternator ne puni.', active: true },
-            { id: 'temp', label: 'Rashladna Tečnost', unit: '°C', cmd: '0105', min: 75, max: 105, n: '85°C-95°C', f: 'Termostat ili antifriz.', active: true },
-            { id: 'load', label: 'Opterećenje', unit: '%', cmd: '0104', min: 0, max: 85, n: '15%-25% Ler', f: 'Mehanički otpor.', active: true },
+            { id: 'temp', label: 'Rashladna Tecnost', unit: '°C', cmd: '0105', min: 75, max: 105, n: '85°C-95°C', f: 'Termostat ili antifriz.', active: true },
+            { id: 'load', label: 'Opterecenje', unit: '%', cmd: '0104', min: 0, max: 85, n: '15%-25% Ler', f: 'Mehanicki otpor.', active: true },
             { id: 'turbo', label: 'Pritisak Turba', unit: 'Bar', cmd: '010B', min: 0, max: 1.8, n: '1.2-1.6 Bar', f: 'Curenje creva/kvar turbine.', active: true },
             { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', cmd: '0110', min: 2, max: 150, n: '3-6 g/s Ler', f: 'MAF protokomer.', active: true },
             { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', cmd: '0123', min: 250, max: 1600, n: '250+ Bar', f: 'Pumpa visokog pritiska.', active: true },
-            { id: 'throttle', label: 'Položaj Gasa', unit: '%', cmd: '0111', min: 0, max: 95, n: '0-100%', f: 'Senzor pedale gasa.', active: true },
+            { id: 'throttle', label: 'Polozaj Gasa', unit: '%', cmd: '0111', min: 0, max: 95, n: '0-100%', f: 'Senzor pedale gasa.', active: true },
             { id: 'oil_t', label: 'Temp. Ulja', unit: '°C', cmd: '015C', min: 85, max: 115, n: '90°C-105°C', f: 'Hladnjak ulja/staro ulje.', active: true },
             { id: 'iat', label: 'Temp. Usisa', unit: '°C', cmd: '010F', min: 10, max: 55, n: 'Spoljna + 15°C', f: 'Senzor usisa ili interkuler.', active: true },
-            { id: 'dpf', label: 'DPF Zasićenje', unit: '%', cmd: '017A', min: 0, max: 45, n: '<40%', f: 'Potrebna regeneracija.', active: true },
-            { id: 'egr', label: 'EGR Greška', unit: '%', cmd: '012D', min: 0, max: 10, n: 'Ispod 5%', f: 'EGR ventil zaprljan.', active: true },
+            { id: 'dpf', label: 'DPF Zasicenje', unit: '%', cmd: '017A', min: 0, max: 45, n: '<40%', f: 'Potrebna regeneracija.', active: true },
+            { id: 'egr', label: 'EGR Greska', unit: '%', cmd: '012D', min: 0, max: 10, n: 'Ispod 5%', f: 'EGR ventil zaprljan.', active: true },
             { id: 'baro', label: 'Atmosf. Pritisak', unit: 'kPa', cmd: '0133', min: 95, max: 105, n: 'Oko 100 kPa', f: 'Senzor pritiska.', active: true },
-            { id: 'stft', label: 'Fuel Trim (K)', unit: '%', cmd: '0106', min: -8, max: 8, n: 'Blizu 0%', f: 'Fals vazduh ili loša smeša.', active: true },
-            { id: 'ltft', label: 'Fuel Trim (D)', unit: '%', cmd: '0107', min: -10, max: 10, n: 'Blizu 0%', f: 'Dugoročna greška sagorevanja.', active: true },
-            { id: 'timing', label: 'Ugao Paljenja', unit: '°', cmd: '010E', min: -5, max: 40, n: 'Varijabilno', f: 'Loše gorivo ili senzor.', active: true },
+            { id: 'stft', label: 'Fuel Trim (K)', unit: '%', cmd: '0106', min: -8, max: 8, n: 'Blizu 0%', f: 'Fals vazduh ili losa smesa.', active: true },
+            { id: 'ltft', label: 'Fuel Trim (D)', unit: '%', cmd: '0107', min: -10, max: 10, n: 'Blizu 0%', f: 'Dugorocna greska sagorevanja.', active: true },
+            { id: 'timing', label: 'Ugao Paljenja', unit: '°', cmd: '010E', min: -5, max: 40, n: 'Varijabilno', f: 'Lose gorivo ili senzor.', active: true },
             { id: 'run_t', label: 'Vreme Rada', unit: 's', cmd: '011F', min: 0, max: 3600, n: 'Od starta', f: 'Nije kvar.', active: true },
             { id: 'evap', label: 'EVAP Pritisak', unit: 'Pa', cmd: '0132', min: -500, max: 500, n: 'Oko 0', f: 'Senzor isparenja goriva.', active: true },
             { id: 'ambient', label: 'Spoljna Temp', unit: '°C', cmd: '0146', min: -20, max: 45, n: 'Spoljna temp.', f: 'Senzor na braniku.', active: true }
@@ -128,7 +136,7 @@
             const txt = document.getElementById('device-text');
             onlyOBD = !onlyOBD;
             check.classList.toggle('active');
-            txt.innerText = onlyOBD ? "SAMO OBD2 UREĐAJI" : "SVI BLUETOOTH UREĐAJI";
+            txt.innerText = onlyOBD ? "SAMO OBD2 UREDJAJI" : "SVI BLUETOOTH UREDJAJI";
         }
 
         async function connectOBD() {
@@ -219,7 +227,7 @@
                 document.getElementById('bt-loader').style.display = 'none';
                 document.getElementById('diag-target').innerHTML = `<div style="background:#150000; padding:25px; border-radius:25px; border:1px solid red; text-align:left;"><h3 style="color:red; font-family:Orbitron;">P0420 DETEKTOVAN</h3><p style="font-size:12px; color:#fff;">Efikasnost katalizatora niska. Check Engine lampica aktivna.</p></div>`;
                 const btn = document.getElementById('scan-btn');
-                btn.innerText = "OBRIŠI GREŠKU"; btn.style.background = "var(--danger)"; btn.onclick = realErase;
+                btn.innerText = "OBRISI GRESKU"; btn.style.background = "var(--danger)"; btn.onclick = realErase;
             }, 2000);
         }
 
@@ -229,10 +237,11 @@
             await sendRaw("04");
             setTimeout(() => {
                 document.getElementById('bt-loader').style.display = 'none';
-                document.getElementById('diag-target').innerHTML = "<h2 style='color:var(--safe); font-family:Orbitron; margin-top:100px;'>USPEŠNO OBRISANO</h2>";
+                // Centrirana poruka bez kvacica
+                document.getElementById('diag-target').innerHTML = "<h2 style='color:var(--safe); font-family:Orbitron; margin:0;'>USPESNO OBRISANO</h2>";
                 document.getElementById('scan-btn').style.display = "none";
                 setTimeout(() => {
-                    document.getElementById('diag-target').innerHTML = `<center><p style="color:#222; font-family:Orbitron; margin-top:100px;">SKENIRANJE SPREMNO</p></center>`;
+                    document.getElementById('diag-target').innerHTML = `<p style="color:#222; font-family:Orbitron;">SKENIRANJE SPREMNO</p>`;
                     const btn = document.getElementById('scan-btn');
                     btn.innerText = "Skeniraj vozilo"; btn.style.background = "var(--accent)"; btn.style.display = "block"; btn.onclick = realScan;
                 }, 3000);
@@ -248,13 +257,13 @@
                 tsX = e.touches[0].clientX;
             }
         }
-        // REGISTRACIJA OFFLINE MODA (Service Worker)
+        
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js').then(reg => {
               console.log('DCS PRO spreman za offline rad.', reg.scope);
             }).catch(err => {
-              console.log('Greška pri registraciji offline moda:', err);
+              console.log('Greska pri registraciji offline moda:', err);
             });
           });
         }
