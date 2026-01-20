@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dcs';
+const CACHE_NAME = 'dcs-v1';
 const assets = [
   './',
   './index.html',
@@ -7,17 +7,15 @@ const assets = [
   'https://i.ibb.co/Lhb8Y6H/dcs-icon.png'
 ];
 
-// Instalacija i cuvanje fajlova u memoriji
 self.addEventListener('install', evt => {
   evt.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('Skladistenje fajlova za offline rad...');
+      console.log('Kesiranje fajlova...');
       return cache.addAll(assets);
     })
   );
 });
 
-// Aktivacija i ciscenje stare memorije
 self.addEventListener('activate', evt => {
   evt.waitUntil(
     caches.keys().then(keys => {
@@ -29,7 +27,6 @@ self.addEventListener('activate', evt => {
   );
 });
 
-// Posluzivanje fajlova kada nema interneta
 self.addEventListener('fetch', evt => {
   evt.respondWith(
     caches.match(evt.request).then(cacheRes => {
