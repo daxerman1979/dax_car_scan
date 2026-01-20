@@ -248,6 +248,16 @@
                 tsX = e.touches[0].clientX;
             }
         }
+        // REGISTRACIJA OFFLINE MODA (Service Worker)
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+              console.log('DCS PRO spreman za offline rad.', reg.scope);
+            }).catch(err => {
+              console.log('Greška pri registraciji offline moda:', err);
+            });
+          });
+        }
     </script>
 </body>
 </html>
