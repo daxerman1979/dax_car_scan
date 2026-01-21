@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dcs-v1';
+const CACHE_NAME = 'dcs-v60-cache';
 const assets = [
   './',
   './index.html',
