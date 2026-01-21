@@ -1,24 +1,25 @@
 {
-  "name": "DCS PRO v60",
+  "name": "DCS PRO",
   "short_name": "DCS PRO",
-  "description": "Profesionalna dijagnostika sa animiranim interfejsom",
-  "id": "index.html",
-  "start_url": "./index.html",
+  "description": "Profesionalna dijagnostika vozila",
+  "id": "/index.html",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "https://i.ibb.co/Lhb8Y6H/dcs-icon.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "https://i.ibb.co/Lhb8Y6H/dcs-icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
