@@ -1,22 +1,22 @@
-const CACHE_NAME = 'dcs-v61-cache';
+const CACHE_NAME = 'dcs-v60-pwa';
 const assets = [
-  './',
-  './index.html',
-  './manifest.json'
+  '/',
+  '/index.html',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', evt => {
   evt.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(assets);
+      cache.addAll(assets);
     })
   );
 });
 
 self.addEventListener('fetch', evt => {
   evt.respondWith(
-    caches.match(evt.request).then(cacheRes => {
-      return cacheRes || fetch(evt.request);
+    caches.match(evt.request).then(res => {
+      return res || fetch(evt.request);
     })
   );
 });
