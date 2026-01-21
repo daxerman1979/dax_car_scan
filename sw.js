@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dcs-v60-real';
+const CACHE_NAME = 'dcs-v60-final';
 const assets = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', evt => {
