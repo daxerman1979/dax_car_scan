@@ -2,10 +2,10 @@
 <html lang="sr">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://i.ibb.co/Lhb8Y6H/dcs-icon.png">
+    <meta name="theme-color" content="#000000">
     <title>DCS PRO v60</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     
@@ -14,18 +14,18 @@
         :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; }
         body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Roboto', sans-serif; height: 100vh; width: 100vw; overflow: hidden; }
         
+        /* Start Screen */
         #start-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; transition: 0.5s ease; }
         .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-        .vin-bar { width: 100%; padding: 12px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 8px; color: #666; position: fixed; top: 0; z-index: 2000; }
         .logo { font-family: 'Orbitron'; font-size: 55px; font-weight: 900; letter-spacing: 10px; margin-bottom: 30px; }
+
+        .vin-bar { width: 100%; padding: 12px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 8px; color: #666; position: fixed; top: 0; z-index: 2000; }
         
-        /* Kartice */
+        /* Kartice sa talasima */
         .card { 
             width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; 
             padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; transition: all 0.3s ease;
         }
-        .card.expanded { height: auto; border-color: var(--accent); }
-        
         .wave-bg { position: absolute; bottom: 0; left: 0; width: 200%; height: 100%; opacity: 0.15; z-index: 1; pointer-events: none; fill: #333; transition: fill 0.5s ease; }
         .wave-path { animation: wave-move 4s linear infinite; }
         @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -34,37 +34,41 @@
         .status-danger { border-color: rgba(255, 17, 17, 0.4); } .status-danger .wave-bg { fill: var(--danger); }
 
         .card-content { z-index: 5; position: relative; display: flex; justify-content: space-between; align-items: center; }
-        .info-box { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #222; font-size: 12px; color: #aaa; z-index: 5; position: relative; line-height: 1.4; }
+        .card-label { font-size: 10px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; }
+        .card-val { font-family: 'Orbitron'; font-size: 32px; font-weight: 900; }
+        .card-unit { font-size: 12px; color: #555; margin-left: 5px; }
+
+        .info-box { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #222; font-size: 12px; color: #aaa; z-index: 5; position: relative; }
         .card.expanded .info-box { display: block; }
 
-        /* UI Elementi */
-        .btn { width: 100%; max-width: 300px; padding: 18px; margin: 8px 0; border-radius: 12px; font-family: 'Orbitron'; font-size: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; border: none; transition: 0.3s; }
+        /* Navigacija i Dugmad */
+        .btn { width: 100%; max-width: 300px; padding: 18px; margin: 8px 0; border-radius: 12px; font-family: 'Orbitron'; font-size: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; border: none; }
         .btn-primary { background: var(--accent); color: #000; }
         .btn-secondary { background: #111; color: #fff; border: 1px solid #222; }
 
         #view-slider { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); }
-        .page { width: 100vw; height: 100vh; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 75px 15px 110px 15px; }
-        .scroll-area { flex-grow: 1; overflow-y: auto; width: 100%; }
+        .page { width: 100vw; height: 100vh; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 80px 15px 120px 15px; }
+        .scroll-area { flex-grow: 1; overflow-y: auto; width: 100%; padding-bottom: 50px; }
 
         .settings-item { background: #0a0a0a; padding: 18px; border-radius: 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #111; width: 100%; }
-        .check-box { width: 22px; height: 22px; border: 2px solid var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-        .check-box.active { background: var(--accent); }
-        .check-box.active::after { content: '✓'; color: #000; font-weight: 900; }
+        .check-box { width: 22px; height: 22px; border: 2px solid var(--accent); border-radius: 6px; }
+        .check-box.active { background: var(--accent); position: relative; }
+        .check-box.active::after { content: '✓'; position: absolute; color: #000; left: 4px; top: -2px; font-weight: 900; }
 
-        #bt-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); display: none; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
+        #bt-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
         .spin { width: 40px; height: 40px; border: 3px solid #111; border-top: 3px solid var(--accent); border-radius: 50%; animation: rot 1s linear infinite; }
         @keyframes rot { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body ontouchstart="hTS(event)" ontouchmove="hTM(event)">
 
-    <div id="bt-loader"><div class="spin"></div><p id="loader-text" style="font-family:Orbitron; margin-top:20px; color:var(--accent);">POVEZIVANJE...</p></div>
+    <div id="bt-loader"><div class="spin"></div><p style="font-family:Orbitron; margin-top:20px; color:var(--accent);">RADIM...</p></div>
 
     <div id="start-screen">
         <div class="logo">DCS</div>
         <button class="btn btn-primary" onclick="connectOBD()">POVEZI ADAPTER</button>
         <button class="btn btn-secondary" onclick="launch(true)">SIMULACIJA (TEST)</button>
-        <button id="pwa-install" class="btn" style="background:#fff; color:#000; display:none;">INSTALIRAJ PROGRAM</button>
+        <button id="pwa-btn" class="btn" style="display:none; background:#fff; color:#000;">INSTALIRAJ APLIKACIJU</button>
     </div>
 
     <div class="vin-bar"><span>VIN: <b id="vin-val">DCS_v60_PRO</b></span><span>STATUS: <b id="status-tag" style="color:var(--danger)">OFFLINE</b></span></div>
@@ -73,10 +77,10 @@
         <div class="page"><div class="scroll-area" id="list-target"></div></div>
         
         <div class="page">
-            <div id="diag-target" style="flex-grow:1; display:flex; align-items:center; justify-content:center; width:100%;">
-                <p style="color:#333; font-family:Orbitron;">SISTEM SPREMAN</p>
+            <div id="diag-target" style="flex-grow:1; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
+                <p style="color:#444; font-family:Orbitron;">DIJAGNOSTIKA SPREMNA</p>
             </div>
-            <button class="btn btn-primary" id="scan-btn" onclick="realScan()">Skeniraj vozilo</button>
+            <button class="btn btn-primary" id="scan-btn" onclick="realScan()">Skeniraj greske</button>
         </div>
 
         <div class="page">
@@ -86,42 +90,43 @@
     </div>
 
     <script>
-        let tsX = 0, currentView = 0, deferredPrompt, isSimulating = false;
+        let tsX = 0, currentView = 0, deferredPrompt;
         
         const sensorDb = [
-            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', min: 700, max: 4800, active: true, desc: 'Normalan rad na leru: 750-900 RPM. Izbegavati crvenu zonu.' },
-            { id: 'brz', label: 'Brzina', unit: 'KMH', min: 0, max: 140, active: true, desc: 'Trenutna brzina vozila očitana sa ECU.' },
-            { id: 'temp', label: 'Rashladna Tecnost', unit: '°C', min: 75, max: 102, active: true, desc: 'Idealno: 85-95°C. Preko 105°C ukazuje na pregrevanje.' },
-            { id: 'aku', label: 'Napon Akumulatora', unit: 'V', min: 13.2, max: 14.8, active: true, desc: 'U radu treba biti 13.8V-14.4V. Ispod 13V - alternator ne puni.' },
-            { id: 'load', label: 'Opterecenje', unit: '%', min: 0, max: 85, active: true, desc: 'Procenat trenutnog opterećenja motora.' },
-            { id: 'turbo', label: 'Pritisak Turba', unit: 'Bar', min: 0, max: 1.6, active: true, desc: 'Pritisak punjenja turbine. Max zavisi od mape motora.' },
-            { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', min: 2, max: 160, active: true, desc: 'Količina vazduha koju motor usisava (Protokomer).' },
-            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', min: 250, max: 1650, active: true, desc: 'Pritisak u Common Rail sistemu.' },
-            { id: 'throttle', label: 'Polozaj Gasa', unit: '%', min: 0, max: 98, active: true, desc: 'Ugao otvorenosti leptira ili pedale gasa.' },
-            { id: 'oil_t', label: 'Temp. Ulja', unit: '°C', min: 80, max: 118, active: true, desc: 'Radna temp ulja je obično 10°C viša od vode.' },
-            { id: 'iat', label: 'Temp. Usisa', unit: '°C', min: 5, max: 60, active: true, desc: 'Temperatura vazduha koji ulazi u motor.' },
-            { id: 'dpf', label: 'DPF Zasicenje', unit: '%', min: 0, max: 50, active: true, desc: 'Preko 70% potrebna prinudna regeneracija.' },
-            { id: 'egr', label: 'EGR Ventil', unit: '%', min: 0, max: 100, active: true, desc: 'Procenat otvorenosti EGR ventila.' },
-            { id: 'baro', label: 'Atmosf. Pritisak', unit: 'kPa', min: 95, max: 105, active: true, desc: 'Trenutni pritisak okoline.' },
-            { id: 'stft', label: 'Fuel Trim (K)', unit: '%', min: -10, max: 10, active: true, desc: 'Kratkoročna korekcija smeše goriva.' },
-            { id: 'ltft', label: 'Fuel Trim (D)', unit: '%', min: -12, max: 12, active: true, desc: 'Dugoročna korekcija smeše goriva.' },
-            { id: 'timing', label: 'Ugao Paljenja', unit: '°', min: -5, max: 45, active: true, desc: 'Vreme paljenja smeše u cilindru.' },
-            { id: 'run_t', label: 'Vreme Rada', unit: 's', min: 0, max: 3600, active: true, desc: 'Vreme od pokretanja motora.' },
-            { id: 'evap', label: 'EVAP Sistem', unit: 'Pa', min: -500, max: 500, active: true, desc: 'Pritisak isparenja u rezervoaru.' },
-            { id: 'ambient', label: 'Spoljna Temp', unit: '°C', min: -20, max: 50, active: true, desc: 'Temperatura spoljne sredine.' }
+            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', min: 700, max: 5000, active: true, desc: 'Normalno: 750-900 (ler), 2000-3000 (vožnja).' },
+            { id: 'brz', label: 'Brzina', unit: 'KMH', min: 0, max: 150, active: true, desc: 'Brzina vozila očitana sa senzora točkova.' },
+            { id: 'temp', label: 'Rashladna Tecnost', unit: '°C', min: 70, max: 105, active: true, desc: 'Radna temp: 85-95°C. Preko 105°C je kritično.' },
+            { id: 'aku', label: 'Napon Akumulatora', unit: 'V', min: 13.0, max: 14.8, active: true, desc: 'Ugasen: 12.6V. U radu: 13.8V - 14.4V.' },
+            { id: 'load', label: 'Opterecenje', unit: '%', min: 0, max: 90, active: true, desc: 'Trenutni procenat iskorišćenja snage motora.' },
+            { id: 'turbo', label: 'Pritisak Turba', unit: 'Bar', min: 0, max: 2.0, active: true, desc: 'Pritisak turbine iznad atmosferskog.' },
+            { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', min: 2, max: 200, active: true, desc: 'Količina vazduha kroz protokomer.' },
+            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', min: 200, max: 1800, active: true, desc: 'Pritisak u Rail-u (Common Rail).' },
+            { id: 'oil_t', label: 'Temp. Ulja', unit: '°C', min: 70, max: 120, active: true, desc: 'Optimalno podmazivanje počinje na 80°C.' },
+            { id: 'throttle', label: 'Pedala Gasa', unit: '%', min: 0, max: 100, active: true, desc: 'Položaj senzora pedale gasa.' },
+            { id: 'egr', label: 'EGR Ventil', unit: '%', min: 0, max: 100, active: true, desc: 'Recirkulacija izduvnih gasova.' },
+            { id: 'dpf', label: 'DPF Filter', unit: '%', min: 0, max: 60, active: true, desc: 'Zasićenost česticama čađi.' },
+            { id: 'iat', label: 'Usisna Temp', unit: '°C', min: 0, max: 65, active: true, desc: 'Temperatura vazduha posle interkulera.' },
+            { id: 'timing', label: 'Ugao Paljenja', unit: '°', min: -5, max: 40, active: true, desc: 'Vreme predpaljenja smeše.' },
+            { id: 'stft', label: 'Kratka Korekcija', unit: '%', min: -10, max: 10, active: true, desc: 'Instant prilagođavanje smeše.' },
+            { id: 'ltft', label: 'Duga Korekcija', unit: '%', min: -15, max: 15, active: true, desc: 'Trajno prilagođavanje mape goriva.' },
+            { id: 'baro', label: 'Barometar', unit: 'hPa', min: 900, max: 1100, active: true, desc: 'Atmosferski pritisak okruženja.' },
+            { id: 'amb', label: 'Spoljna Temp', unit: '°C', min: -20, max: 50, active: true, desc: 'Temperatura vazduha spolja.' },
+            { id: 'run', label: 'Vreme Rada', unit: 'min', min: 0, max: 480, active: true, desc: 'Vreme od poslednjeg starta.' },
+            { id: 'distance', label: 'Put sa greskom', unit: 'km', min: 0, max: 1, active: true, desc: 'Kilometri pređeni sa upaljenom Check Engine lampicom.' }
         ];
 
-        // PWA Chrome Installer
+        // PWA LOGIKA
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferredPrompt = e;
-            const btn = document.getElementById('pwa-install');
-            btn.style.display = 'block';
-            btn.onclick = async () => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const pwaBtn = document.getElementById('pwa-btn');
+            pwaBtn.style.display = 'block';
+            pwaBtn.addEventListener('click', () => {
                 deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') btn.style.display = 'none';
-                deferredPrompt = null;
-            };
+                deferredPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') pwaBtn.style.display = 'none';
+                });
+            });
         });
 
         function launch(isSim) {
@@ -130,11 +135,10 @@
             document.getElementById('status-tag').style.color = "var(--safe)";
             renderDashboard(); renderSettings();
             if(isSim) {
-                isSimulating = true;
-                setInterval(() => { 
+                setInterval(() => {
                     sensorDb.forEach(s => {
-                        let val = (Math.random() * (s.max * 1.15)).toFixed(s.id === 'aku' ? 1 : 0);
-                        updateUI(s.id, val);
+                        let v = (Math.random() * (s.max * 1.1)).toFixed(s.id === 'aku' ? 1 : 0);
+                        updateUI(s.id, v);
                     });
                 }, 1000);
             }
@@ -150,10 +154,7 @@
                     <div class="card-content">
                         <div><div class="card-label">${s.label}</div><div style="display:flex;align-items:baseline;"><span id="${s.id}-val" class="card-val">--</span><span class="card-unit">${s.unit}</span></div></div>
                     </div>
-                    <div class="info-box">
-                        <b>GRANICE:</b> ${s.min} - ${s.max} ${s.unit}<br><br>
-                        <b>DETALJI:</b> ${s.desc}
-                    </div>
+                    <div class="info-box"><b>DOZVOLJENO:</b> ${s.min}-${s.max} ${s.unit}<br><br>${s.desc}</div>
                 </div>
             `).join('');
         }
@@ -169,68 +170,49 @@
 
         function toggleSensor(id) {
             const s = sensorDb.find(x => x.id === id);
-            if(s) {
-                s.active = !s.active;
-                renderDashboard(); renderSettings();
-            }
+            if(s) { s.active = !s.active; renderDashboard(); renderSettings(); }
         }
 
         function updateUI(id, val) {
             const el = document.getElementById(id + '-val');
             const card = document.getElementById('card-' + id);
-            const sensor = sensorDb.find(s => s.id === id);
-            if (el) {
+            const s = sensorDb.find(x => x.id === id);
+            if(el) {
                 el.innerText = val;
-                if(card && sensor) {
-                    if (parseFloat(val) > sensor.max || parseFloat(val) < sensor.min && id !== 'brz') {
-                        card.classList.add('status-danger'); card.classList.remove('status-safe');
-                    } else {
-                        card.classList.add('status-safe'); card.classList.remove('status-danger');
-                    }
+                if(card && s) {
+                    if(parseFloat(val) > s.max) { card.classList.add('status-danger'); card.classList.remove('status-safe'); }
+                    else { card.classList.add('status-safe'); card.classList.remove('status-danger'); }
                 }
             }
+        }
+
+        function realScan() {
+            document.getElementById('bt-loader').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('bt-loader').style.display = 'none';
+                document.getElementById('diag-target').innerHTML = `<div style="border:2px solid red; padding:20px; border-radius:20px; background:rgba(255,0,0,0.1);"><h2 style="color:red;margin:0;">P0234</h2><p>Turbocharger Overboost Condition</p></div>`;
+                document.getElementById('scan-btn').innerText = "OBRISI GRESKE";
+                document.getElementById('scan-btn').onclick = () => {
+                    document.getElementById('bt-loader').style.display = 'flex';
+                    setTimeout(() => {
+                        document.getElementById('bt-loader').style.display = 'none';
+                        document.getElementById('diag-target').innerHTML = `<h2 style="color:var(--safe);">SISTEM ISPRAVAN</h2>`;
+                        document.getElementById('scan-btn').style.display = 'none';
+                    }, 1500);
+                }
+            }, 2000);
         }
 
         function moveNav(dir) {
             currentView = Math.max(0, Math.min(2, currentView + dir));
             document.getElementById('view-slider').style.transform = `translateX(-${currentView * 100}vw)`;
         }
-
         function hTS(e) { tsX = e.touches[0].clientX; }
-        function hTM(e) {
-            let diff = tsX - e.touches[0].clientX;
-            if (Math.abs(diff) > 80) { moveNav(diff > 0 ? 1 : -1); tsX = e.touches[0].clientX; }
-        }
+        function hTM(e) { let diff = tsX - e.touches[0].clientX; if(Math.abs(diff) > 80) { moveNav(diff > 0 ? 1 : -1); tsX = e.touches[0].clientX; } }
 
-        async function realScan() {
-            document.getElementById('bt-loader').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('bt-loader').style.display = 'none';
-                document.getElementById('diag-target').innerHTML = `<div style="border:1px solid red; padding:20px; border-radius:20px; width:90%;"><h3 style="color:red; margin:0;">P0420</h3><p>Catalyst System Efficiency Below Threshold</p></div>`;
-                document.getElementById('scan-btn').innerText = "OBRISI GRESKU";
-                document.getElementById('scan-btn').onclick = realErase;
-            }, 2000);
-        }
+        async function connectOBD() { launch(false); }
 
-        async function realErase() {
-            document.getElementById('bt-loader').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('bt-loader').style.display = 'none';
-                document.getElementById('diag-target').innerHTML = `<h2 style="color:var(--safe);">SVE GRESKE OBRISANE</h2>`;
-                document.getElementById('scan-btn').style.display = 'none';
-            }, 1500);
-        }
-
-        async function connectOBD() {
-            document.getElementById('bt-loader').style.display = 'flex';
-            try {
-                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] });
-                launch(false);
-            } catch (e) { console.log(e); }
-            document.getElementById('bt-loader').style.display = 'none';
-        }
-
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
 </body>
 </html>
