@@ -12,58 +12,45 @@
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; }
-        
-        /* Body osigurava da nema skrolovanja celog ekrana */
-        body, html { 
-            margin: 0; padding: 0; background: #000; color: #fff; 
-            font-family: 'Roboto', sans-serif; height: 100%; width: 100%; 
-            overflow: hidden; position: fixed; 
-        }
+        body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Roboto', sans-serif; height: 100%; width: 100%; overflow: hidden; position: fixed; }
         
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; transition: 0.5s ease; }
         .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-        .logo { font-family: 'Orbitron'; font-size: clamp(40px, 15vw, 65px); font-weight: 900; letter-spacing: 10px; margin-bottom: 30px; }
+        .logo { font-family: 'Orbitron'; font-size: clamp(40px, 15vw, 65px); font-weight: 900; letter-spacing: 10px; margin-bottom: 20px; }
 
         .vin-bar { width: 100%; padding: 15px 20px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 10px; color: #666; position: fixed; top: 0; z-index: 2000; }
         
-        /* Kartice su sada krupnije */
-        .card { 
-            width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; 
-            padding: 25px 20px; margin-bottom: 18px; position: relative; overflow: hidden; transition: all 0.3s ease;
-        }
+        .card { width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; padding: 25px 20px; margin-bottom: 18px; position: relative; overflow: hidden; transition: all 0.3s ease; }
         .wave-bg { position: absolute; bottom: 0; left: 0; width: 200%; height: 100%; opacity: 0.18; z-index: 1; pointer-events: none; fill: #333; }
         .wave-path { animation: wave-move 4s linear infinite; }
         @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        .status-safe { border-color: rgba(0, 255, 136, 0.5); box-shadow: 0 0 20px rgba(0,255,136,0.05); } 
-        .status-safe .wave-bg { fill: var(--safe); }
-        .status-danger { border-color: rgba(255, 17, 17, 0.5); box-shadow: 0 0 20px rgba(255,17,17,0.05); } 
-        .status-danger .wave-bg { fill: var(--danger); }
+        .status-safe { border-color: rgba(0, 255, 136, 0.5); } .status-safe .wave-bg { fill: var(--safe); }
+        .status-danger { border-color: rgba(255, 17, 17, 0.5); } .status-danger .wave-bg { fill: var(--danger); }
 
         .card-content { z-index: 5; position: relative; display: flex; justify-content: space-between; align-items: center; }
-        .card-label { font-size: 11px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; margin-bottom: 5px; }
+        .card-label { font-size: 11px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; }
         .card-val { font-family: 'Orbitron'; font-size: 38px; font-weight: 900; line-height: 1; }
         .card-unit { font-size: 14px; color: #666; margin-left: 8px; font-weight: 700; }
 
-        .info-box { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #222; font-size: 14px; color: #ccc; z-index: 5; position: relative; line-height: 1.5; }
+        .info-box { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #222; font-size: 14px; color: #ccc; z-index: 5; position: relative; }
         .card.expanded .info-box { display: block; }
 
-        /* Navigacija */
         #view-slider { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .page { width: 100vw; height: 100vh; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 90px 20px 150px 20px; }
         .scroll-area { flex-grow: 1; overflow-y: auto; width: 100%; padding-bottom: 30px; -webkit-overflow-scrolling: touch; }
 
         .nav-controls { position: fixed; bottom: 40px; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 45px; z-index: 5000; }
         .nav-btn { background: #111; border: 1px solid #222; color: var(--accent); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; }
-        .dot { width: 8px; height: 8px; background: #333; border-radius: 50%; transition: 0.3s; }
+        .dot { width: 8px; height: 8px; background: #333; border-radius: 50%; }
         .dot.active { background: var(--accent); transform: scale(1.5); }
 
-        /* Dugmad */
         .btn { width: 100%; max-width: 320px; padding: 22px; margin: 10px 0; border-radius: 16px; font-family: 'Orbitron'; font-size: 14px; font-weight: 900; cursor: pointer; text-transform: uppercase; border: none; }
-        .btn-primary { background: var(--accent); color: #000; box-shadow: 0 10px 20px rgba(0, 210, 255, 0.2); }
+        .btn-primary { background: var(--accent); color: #000; }
         .btn-secondary { background: #111; color: #fff; border: 1px solid #222; }
 
-        .filter-opt { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; color: #888; font-size: 12px; font-family: 'Orbitron'; font-weight: 700; }
+        /* Vraćena kvacica za filter */
+        .filter-opt { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; color: #888; font-size: 12px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; }
         .settings-item { background: #0a0a0a; padding: 22px; border-radius: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #151515; width: 100%; }
         .check-box { width: 28px; height: 28px; border: 2px solid var(--accent); border-radius: 8px; position: relative; }
         .check-box.active { background: var(--accent); }
@@ -93,14 +80,12 @@
 
     <div id="view-slider">
         <div class="page"><div class="scroll-area" id="list-target"></div></div>
-        
         <div class="page">
             <div id="diag-target" style="flex-grow:1; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
                 <p style="color:#333; font-family:Orbitron; font-size:14px;">SKENIRANJE SPREMNO</p>
             </div>
             <button class="btn btn-primary" id="scan-btn" onclick="realScan()">Skeniraj greske</button>
         </div>
-
         <div class="page">
             <div style="font-family:Orbitron; font-size:14px; color:var(--accent); margin-bottom:25px; letter-spacing:2px;">IZBOR SENZORA</div>
             <div class="scroll-area" id="settings-target"></div>
@@ -109,9 +94,7 @@
 
     <div class="nav-controls">
         <div class="nav-btn" onclick="moveNav(-1)">←</div>
-        <div style="display:flex; gap:12px;">
-            <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
-        </div>
+        <div style="display:flex; gap:12px;"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
         <div class="nav-btn" onclick="moveNav(1)">→</div>
     </div>
 
@@ -120,26 +103,26 @@
         let isSimulating = false, gattChar = null, readInterval = null;
         
         const sensorDb = [
-            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', cmd: '010C', min: 700, max: 5000, active: true, desc: 'Prikazuje brzinu okretanja radilice motora u minuti.' },
-            { id: 'brz', label: 'Brzina', unit: 'KMH', cmd: '010D', min: 0, max: 150, active: true, desc: 'Brzina kretanja vozila očitana sa ECU jedinice.' },
-            { id: 'temp', label: 'Rashladna Tecnost', unit: '°C', cmd: '0105', min: 70, max: 105, active: true, desc: 'Temperatura antifriza. Normalno je između 85°C i 95°C.' },
-            { id: 'aku', label: 'Napon Akumulatora', unit: 'V', cmd: 'ATRV', min: 13.0, max: 14.8, active: true, desc: 'Napon alternatora. Ispod 13.2V alternator ne puni dovoljno.' },
-            { id: 'load', label: 'Opterecenje', unit: '%', cmd: '0104', min: 0, max: 90, active: true, desc: 'Procenat maksimalnog obrtnog momenta koji motor trenutno koristi.' },
-            { id: 'turbo', label: 'Pritisak Turba', unit: 'Bar', cmd: '010B', min: 0, max: 2.0, active: true, desc: 'Pritisak vazduha koji turbina šalje u cilindre.' },
-            { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', cmd: '0110', min: 2, max: 200, active: true, desc: 'Masa vazduha koju usisava motor (Protokomer).' },
-            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', cmd: '0123', min: 200, max: 1800, active: true, desc: 'Pritisak goriva u Common Rail magistrali.' },
+            { id: 'rpm', label: 'Obrtaji Motora', unit: 'RPM', cmd: '010C', min: 700, max: 5000, active: true, desc: 'PID: 010C. Formula: ((A*256)+B)/4' },
+            { id: 'brz', label: 'Brzina', unit: 'KMH', cmd: '010D', min: 0, max: 150, active: true, desc: 'PID: 010D. Formula: A' },
+            { id: 'temp', label: 'Rashladna Tecnost', unit: '°C', cmd: '0105', min: 70, max: 105, active: true, desc: 'PID: 0105. Formula: A-40' },
+            { id: 'aku', label: 'Napon Akumulatora', unit: 'V', cmd: 'ATRV', min: 13.0, max: 14.8, active: true, desc: 'Napon alternatora očitane direktno sa adaptera.' },
+            { id: 'load', label: 'Opterecenje', unit: '%', cmd: '0104', min: 0, max: 90, active: true, desc: 'Procenat trenutnog opterećenja motora.' },
+            { id: 'turbo', label: 'Pritisak Turba', unit: 'Bar', cmd: '010B', min: 0, max: 2.0, active: true, desc: 'Pritisak punjenja turbine.' },
+            { id: 'maf', label: 'Protok Vazduha', unit: 'g/s', cmd: '0110', min: 2, max: 200, active: true, desc: 'Masa usisanog vazduha (Protokomer).' },
+            { id: 'fuel', label: 'Pritisak Goriva', unit: 'Bar', cmd: '0123', min: 200, max: 1800, active: true, desc: 'Pritisak u Common Rail magistrali.' },
             { id: 'oil_t', label: 'Temp. Ulja', unit: '°C', cmd: '015C', min: 70, max: 120, active: true, desc: 'Temperatura ulja u motoru.' },
-            { id: 'throttle', label: 'Pedala Gasa', unit: '%', cmd: '0111', min: 0, max: 100, active: true, desc: 'Položaj pedale gasa u procentima.' },
-            { id: 'egr', label: 'EGR Ventil', unit: '%', cmd: '012C', min: 0, max: 100, active: true, desc: 'Otvorenost ventila za recirkulaciju gasova.' },
-            { id: 'dpf', label: 'DPF Filter', unit: '%', cmd: '017A', min: 0, max: 60, active: true, desc: 'Zasićenost filtera čestica čađi.' },
-            { id: 'iat', label: 'Usisna Temp', unit: '°C', cmd: '010F', min: 0, max: 65, active: true, desc: 'Temperatura vazduha koji ulazi u motor.' },
-            { id: 'timing', label: 'Ugao Paljenja', unit: '°', cmd: '010E', min: -5, max: 40, active: true, desc: 'Ugao pod kojim svećica ili brizgaljka pali smešu.' },
-            { id: 'stft', label: 'Kratka Korekcija', unit: '%', cmd: '0106', min: -10, max: 10, active: true, desc: 'Trenutno prilagođavanje smeše goriva.' },
-            { id: 'ltft', label: 'Duga Korekcija', unit: '%', cmd: '0107', min: -15, max: 15, active: true, desc: 'Trajna korekcija mape ubrizgavanja.' },
-            { id: 'baro', label: 'Barometar', unit: 'hPa', cmd: '0133', min: 900, max: 1100, active: true, desc: 'Atmosferski pritisak okruženja.' },
-            { id: 'amb', label: 'Spoljna Temp', unit: '°C', cmd: '0146', min: -20, max: 50, active: true, desc: 'Temperatura vazduha izvan vozila.' },
-            { id: 'run', label: 'Vreme Rada', unit: 'min', cmd: '011F', min: 0, max: 480, active: true, desc: 'Koliko dugo motor radi od starta.' },
-            { id: 'distance', label: 'Put sa greskom', unit: 'km', cmd: '0131', min: 0, max: 1, active: true, desc: 'Kilometri pređeni sa upaljenom greškom.' }
+            { id: 'throttle', label: 'Pedala Gasa', unit: '%', cmd: '0111', min: 0, max: 100, active: true, desc: 'Položaj senzora pedale gasa.' },
+            { id: 'egr', label: 'EGR Ventil', unit: '%', cmd: '012C', min: 0, max: 100, active: true, desc: 'Recirkulacija izduvnih gasova.' },
+            { id: 'dpf', label: 'DPF Filter', unit: '%', cmd: '017A', min: 0, max: 60, active: true, desc: 'Zasićenost filtera čestica.' },
+            { id: 'iat', label: 'Usisna Temp', unit: '°C', cmd: '010F', min: 0, max: 65, active: true, desc: 'Temperatura vazduha posle interkulera.' },
+            { id: 'timing', label: 'Ugao Paljenja', unit: '°', cmd: '010E', min: -5, max: 40, active: true, desc: 'Ugao predpaljenja smeše.' },
+            { id: 'stft', label: 'Kratka Korekcija', unit: '%', cmd: '0106', min: -10, max: 10, active: true, desc: 'Kratkoročna korekcija smeše goriva.' },
+            { id: 'ltft', label: 'Duga Korekcija', unit: '%', cmd: '0107', min: -15, max: 15, active: true, desc: 'Dugoročna korekcija smeše goriva.' },
+            { id: 'baro', label: 'Barometar', unit: 'hPa', cmd: '0133', min: 900, max: 1100, active: true, desc: 'Atmosferski pritisak.' },
+            { id: 'amb', label: 'Spoljna Temp', unit: '°C', cmd: '0146', min: -20, max: 50, active: true, desc: 'Temperatura spoljne sredine.' },
+            { id: 'run', label: 'Vreme Rada', unit: 'min', cmd: '011F', min: 0, max: 480, active: true, desc: 'Vreme rada od starta motora.' },
+            { id: 'distance', label: 'Put sa greskom', unit: 'km', cmd: '0131', min: 0, max: 1, active: true, desc: 'Kilometri sa Check Engine lampicom.' }
         ];
 
         function toggleFilter() { filterOBD = !filterOBD; document.getElementById('obd-filter-check').classList.toggle('active'); }
@@ -151,6 +134,8 @@
                 if(filterOBD) options.filters = [{ services: ['00001101-0000-1000-8000-00805f9b34fb'] }];
                 const device = await navigator.bluetooth.requestDevice(options);
                 const server = await device.gatt.connect();
+                const service = await server.getPrimaryService('00001101-0000-1000-8000-00805f9b34fb');
+                gattChar = await service.getCharacteristic('00001101-0000-1000-8000-00805f9b34fb');
                 launch(false);
             } catch (e) { console.log(e); }
             document.getElementById('bt-loader').style.display = 'none';
@@ -175,7 +160,7 @@
                     <div class="card-content">
                         <div><div class="card-label">${s.label}</div><div style="display:flex;align-items:baseline;"><span id="${s.id}-val" class="card-val">--</span><span class="card-unit">${s.unit}</span></div></div>
                     </div>
-                    <div class="info-box"><b>OPIS:</b> ${s.desc}<br><br><b>RADNI OPSEG:</b> ${s.min} - ${s.max} ${s.unit}</div>
+                    <div class="info-box"><b>DETALJI:</b> ${s.desc}<br><br><b>RADNI OPSEG:</b> ${s.min} - ${s.max} ${s.unit}</div>
                 </div>
             `).join('');
         }
@@ -193,14 +178,12 @@
 
         function realScan() {
             document.getElementById('bt-loader').style.display = 'flex';
-            document.getElementById('loader-text').innerText = "SKENIRANJE...";
             setTimeout(() => {
                 document.getElementById('bt-loader').style.display = 'none';
                 document.getElementById('diag-target').innerHTML = `<div style="border:2px solid red; padding:25px; border-radius:24px; background:rgba(255,0,0,0.1); width:100%; text-align:center;"><h2 style="color:red;margin-bottom:10px;">P0420</h2><p style="font-size:14px; margin:0;">Catalyst System Efficiency Below Threshold</p></div>`;
                 document.getElementById('scan-btn').innerText = "OBRISI GRESKU";
                 document.getElementById('scan-btn').onclick = () => {
                     document.getElementById('bt-loader').style.display = 'flex';
-                    document.getElementById('loader-text').innerText = "BRISANJE...";
                     setTimeout(() => {
                         document.getElementById('bt-loader').style.display = 'none';
                         document.getElementById('diag-target').innerHTML = `<h2 style="color:var(--safe); font-family:Orbitron;">SISTEM ISPRAVAN</h2>`;
