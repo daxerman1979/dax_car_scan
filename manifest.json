@@ -3,7 +3,7 @@
   "short_name": "DCS PRO",
   "description": "Profesionalna dijagnostika vozila",
   "id": ".",
-  "start_url": "/dax_car_scan/",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
@@ -12,18 +12,6 @@
     {
       "src": "https://i.ibb.co/Lhb8Y6H/dcs-icon.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://i.ibb.co/Lhb8Y6H/dcs-icon.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "https://i.ibb.co/Lhb8Y6H/dcs-icon.png",
-      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
