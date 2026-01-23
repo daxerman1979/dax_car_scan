@@ -12,7 +12,13 @@
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; }
-        body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Roboto', sans-serif; height: 100%; width: 100%; overflow: hidden; position: fixed; }
+        
+        /* Promena sa vh na % sprečava zoom bagove na mobilnim pretraživačima */
+        body, html { 
+            margin: 0; padding: 0; background: #000; color: #fff; 
+            font-family: 'Roboto', sans-serif; height: 100%; width: 100%; 
+            overflow: hidden; position: fixed; touch-action: none;
+        }
         
         #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; transition: 0.5s ease; }
         .gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
@@ -36,9 +42,9 @@
         .info-box { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #222; font-size: 14px; color: #ccc; z-index: 5; position: relative; }
         .card.expanded .info-box { display: block; }
 
-        #view-slider { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .page { width: 100vw; height: 100vh; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 90px 20px 150px 20px; }
-        .scroll-area { flex-grow: 1; overflow-y: auto; width: 100%; padding-bottom: 30px; -webkit-overflow-scrolling: touch; }
+        #view-slider { display: flex; width: 300vw; height: 100%; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .page { width: 100vw; height: 100%; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 90px 20px 150px 20px; }
+        .scroll-area { flex-grow: 1; overflow-y: auto; width: 100%; padding-bottom: 30px; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
 
         .nav-controls { position: fixed; bottom: 40px; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 45px; z-index: 5000; }
         .nav-btn { background: #111; border: 1px solid #222; color: var(--accent); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; }
@@ -49,7 +55,6 @@
         .btn-primary { background: var(--accent); color: #000; }
         .btn-secondary { background: #111; color: #fff; border: 1px solid #222; }
 
-        /* Vraćena kvacica za filter */
         .filter-opt { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; color: #888; font-size: 12px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; }
         .settings-item { background: #0a0a0a; padding: 22px; border-radius: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #151515; width: 100%; }
         .check-box { width: 28px; height: 28px; border: 2px solid var(--accent); border-radius: 8px; position: relative; }
