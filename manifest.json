@@ -3,7 +3,7 @@
   "short_name": "DCS PRO",
   "description": "Profesionalna dijagnostika vozila",
   "id": ".",
-  "start_url": "/dax_car_scan",
+  "start_url": "/dax_car_scan/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
