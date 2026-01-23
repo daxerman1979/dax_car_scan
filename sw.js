@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dcs-v60-zoom-fix';
+const CACHE_NAME = 'dcs-v60-final-fix';
 const assets = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', evt => {
