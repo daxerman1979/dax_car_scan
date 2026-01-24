@@ -2,12 +2,11 @@
   "name": "DCS PRO v60",
   "short_name": "DCS PRO",
   "description": "Profesionalna dijagnostika vozila",
-  "id": ".",
+  "id": "index.html",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "https://i.ibb.co/Lhb8Y6H/dcs-icon.png",
