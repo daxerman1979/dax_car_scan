@@ -3,74 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DCS PRO - v2</title>
+    <title>DCS PRO - v3</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; --card: #0f0f0f; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Roboto', sans-serif; height: 100%; overflow-x: hidden; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Roboto', sans-serif; height: 100%; overflow: hidden; }
         
-        /* Start Screen */
         #start-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; }
-        .logo { font-family: 'Orbitron'; font-size: 45px; font-weight: 900; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; }
-        .version-tag { position: absolute; bottom: 20px; font-family: 'Orbitron'; font-size: 10px; color: #444; }
+        .logo { font-family: 'Orbitron'; font-size: 45px; font-weight: 900; letter-spacing: 8px; color: var(--accent); }
         
-        /* Dashboard Grid */
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 70px 15px 20px 15px; }
-        .card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; height: 110px; }
-        .card-label { font-size: 10px; color: #666; text-transform: uppercase; font-weight: 700; }
-        .card-val { font-family: 'Orbitron'; font-size: 26px; color: var(--safe); font-weight: 900; margin-top: 5px; }
-        .card-unit { font-size: 12px; color: #444; margin-left: 4px; }
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 60px 10px 100px 10px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
+        .card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 12px; padding: 12px; height: 90px; }
+        .card-label { font-size: 9px; color: #666; text-transform: uppercase; }
+        .card-val { font-family: 'Orbitron'; font-size: 22px; color: var(--safe); margin-top: 5px; }
 
-        /* Status Bar */
-        .status-bar { position: fixed; top: 0; width: 100%; height: 50px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; padding: 0 15px; font-family: 'Orbitron'; font-size: 10px; color: var(--accent); z-index: 1000; }
+        .status-bar { position: fixed; top: 0; width: 100%; height: 45px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; font-family: 'Orbitron'; font-size: 9px; z-index: 1000; box-sizing: border-box;}
 
-        .btn { padding: 18px 30px; border-radius: 12px; font-family: 'Orbitron'; font-weight: 900; border: none; background: var(--accent); color: #000; width: 80%; cursor: pointer; }
+        .controls { position: fixed; bottom: 0; width: 100%; background: #080808; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #1a1a1a; box-sizing: border-box; }
+        .btn { flex: 1; padding: 15px; border-radius: 8px; font-family: 'Orbitron'; font-size: 10px; font-weight: 900; border: none; cursor: pointer; }
+        .btn-main { background: var(--accent); color: #000; }
+        .btn-danger { background: var(--danger); color: #fff; }
+
+        #error-box { display: none; background: #1a0000; color: #ff5555; padding: 15px; border-radius: 8px; margin-top: 10px; font-family: monospace; font-size: 12px; border: 1px solid var(--danger); width: 90%; }
         #loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; flex-direction: column; }
-        .spinner { width: 30px; height: 30px; border: 3px solid #111; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="spinner"></div>
-        <div id="loader-text" style="color:var(--accent); font-family:Orbitron; font-size:10px;">POVEZIVANJE SA ECU...</div>
-    </div>
+    <div id="loader"><div style="color:var(--accent); font-family:Orbitron;">KOMUNIKACIJA...</div></div>
 
     <div id="start-screen">
         <div class="logo">DCS PRO</div>
-        <div style="font-family:Orbitron; font-size:10px; color:#555; margin-bottom:30px; letter-spacing:2px;">v2 - MULTI PARAMETER</div>
-        <button class="btn" onclick="connect()">POKRENI SKENIRANJE</button>
-        <div class="version-tag">STABLE BUILD v2.0.0</div>
+        <div style="color:#444; font-size:10px; margin-bottom:30px;">STABLE BUILD v3.0.0</div>
+        <button class="btn btn-main" style="flex:none; width:250px;" onclick="connect()">POVEŽI vLINKER</button>
     </div>
 
-    <div class="status-bar">STATUS: <span id="conn-status" style="margin-left:5px; color:#fff;">ODSUTAN</span></div>
+    <div class="status-bar">
+        <span>STATUS: <b id="conn-status">ODSUTAN</b></span>
+        <span id="dtc-indicator" style="color:var(--danger); display:none;">! GREŠKA DETEKTOVANA</span>
+    </div>
 
     <div class="dashboard">
-        <div class="card">
-            <div class="card-label">Obrtaji (RPM)</div>
-            <div class="card-val"><span id="rpm-val">0</span><span class="card-unit">rpm</span></div>
-        </div>
-        <div class="card">
-            <div class="card-label">Brzina</div>
-            <div class="card-val"><span id="speed-val">0</span><span class="card-unit">km/h</span></div>
-        </div>
-        <div class="card">
-            <div class="card-label">Temp. Motora</div>
-            <div class="card-val"><span id="temp-val">--</span><span class="card-unit">°C</span></div>
-        </div>
-        <div class="card">
-            <div class="card-label">Akumulator</div>
-            <div class="card-val" style="color:var(--accent);"><span id="volt-val">--</span><span class="card-unit">V</span></div>
-        </div>
-        <div class="card">
-            <div class="card-label">Opterećenje</div>
-            <div class="card-val"><span id="load-val">--</span><span class="card-unit">%</span></div>
-        </div>
-        <div class="card">
-            <div class="card-label">Usisna Temp.</div>
-            <div class="card-val"><span id="iat-val">--</span><span class="card-unit">°C</span></div>
-        </div>
+        <div class="card"><div class="card-label">RPM</div><div class="card-val" id="rpm-val">0</div></div>
+        <div class="card"><div class="card-label">BRZINA</div><div class="card-val" id="speed-val">0</div></div>
+        <div class="card"><div class="card-label">TEMP VODE</div><div class="card-val" id="temp-val">--</div></div>
+        <div class="card"><div class="card-label">NAPON</div><div class="card-val" id="volt-val" style="color:var(--accent)">--</div></div>
+        <div class="card"><div class="card-label">LOAD</div><div class="card-val" id="load-val">--</div></div>
+        <div class="card"><div class="card-label">USIS</div><div class="card-val" id="iat-val">--</div></div>
+        
+        <div id="error-box"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-main" onclick="readDTC()">PROVERI GREŠKE (DTC)</button>
+        <button class="btn btn-danger" onclick="clearDTC()">OBRIŠI GREŠKE</button>
     </div>
 
     <script>
@@ -86,6 +72,9 @@
                 });
 
                 document.getElementById('loader').style.display = 'flex';
+                
+                device.addEventListener('gattserverdisconnected', onDisconnected);
+                
                 server = await device.gatt.connect();
                 const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
                 char = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
@@ -93,73 +82,90 @@
                 await char.startNotifications();
                 char.addEventListener('characteristicvaluechanged', handleData);
 
-                // Setup adaptera
-                await sendCmd("ATZ"); await sleep(500);
-                await sendCmd("ATE0"); await sleep(200); // Echo off
-                await sendCmd("ATL0"); await sleep(200); // Linefeed off
-                await sendCmd("0100"); await sleep(500); // Init protocol
+                // Stabilna inicijalizacija
+                await sendCmd("ATZ"); await sleep(800);
+                await sendCmd("ATE0"); await sleep(300);
+                await sendCmd("ATL0"); await sleep(300);
+                await sendCmd("ATSP0"); await sleep(500); // Auto protocol
 
                 document.getElementById('start-screen').style.display = 'none';
                 document.getElementById('loader').style.display = 'none';
-                document.getElementById('conn-status').innerText = "POVEZAN (vLinker BLE)";
+                document.getElementById('conn-status').innerText = "POVEZAN";
                 document.getElementById('conn-status').style.color = "var(--safe)";
                 
                 startPolling();
             } catch (e) {
-                alert("Greška: " + e.message);
+                console.error(e);
+                alert("Veza nije uspela. Proveri da li je vLinker uparen.");
                 document.getElementById('loader').style.display = 'none';
             }
         }
 
+        function onDisconnected() {
+            document.getElementById('start-screen').style.display = 'flex';
+            document.getElementById('conn-status').innerText = "PREKINUTO";
+            document.getElementById('conn-status').style.color = "var(--danger)";
+        }
+
         async function sendCmd(cmd) {
-            if (!char) return;
-            await char.writeValue(encoder.encode(cmd + "\r"));
+            if (char && device.gatt.connected) {
+                try {
+                    await char.writeValue(encoder.encode(cmd + "\r"));
+                } catch(e) { console.log("GATT Busy"); }
+            }
         }
 
         function handleData(event) {
             let data = decoder.decode(event.target.value).replace(/\s/g, '').replace(/>/g, '');
             
-            // Parsiranje RPM
             if (data.includes("410C")) {
                 let hex = data.substring(data.indexOf("410C")+4, data.indexOf("410C")+8);
                 document.getElementById('rpm-val').innerText = Math.round(parseInt(hex, 16) / 4);
             }
-            // Parsiranje Brzine
             if (data.includes("410D")) {
                 let hex = data.substring(data.indexOf("410D")+4, data.indexOf("410D")+6);
                 document.getElementById('speed-val').innerText = parseInt(hex, 16);
             }
-            // Parsiranje Temperature Motora (A-40)
             if (data.includes("4105")) {
-                let hex = data.substring(data.indexOf("4105")+4, data.indexOf("4105")+6);
-                document.getElementById('temp-val').innerText = parseInt(hex, 16) - 40;
+                document.getElementById('temp-val').innerText = parseInt(data.substring(data.indexOf("4105")+4, data.indexOf("4105")+6), 16) - 40;
             }
-            // Parsiranje Opterećenja (A*100/255)
-            if (data.includes("4104")) {
-                let hex = data.substring(data.indexOf("4104")+4, data.indexOf("4104")+6);
-                document.getElementById('load-val').innerText = Math.round(parseInt(hex, 16) * 100 / 255);
+            if (data.includes("43")) { // DTC Response
+                showDTC(data);
             }
-             // Parsiranje Usisne Temperature (A-40)
-             if (data.includes("410F")) {
-                let hex = data.substring(data.indexOf("410F")+4, data.indexOf("410F")+6);
-                document.getElementById('iat-val').innerText = parseInt(hex, 16) - 40;
-            }
-            // Parsiranje Napona (Adapter vraća npr 12.4V)
             if (data.match(/\d+\.\d+V/)) {
-                document.getElementById('volt-val').innerText = data.replace(/V/g, '');
+                document.getElementById('volt-val').innerText = data;
+            }
+        }
+
+        async function readDTC() {
+            document.getElementById('error-box').style.display = 'none';
+            await sendCmd("03"); // Mode 03 - Request emission-related diagnostic trouble codes
+        }
+
+        function showDTC(data) {
+            let box = document.getElementById('error-box');
+            box.style.display = 'block';
+            if (data.includes("4300")) {
+                box.innerHTML = "<b style='color:var(--safe)'>NEMA GREŠAKA</b>";
+            } else {
+                // Gruba obrada koda (npr 4301P0420 -> P0420)
+                box.innerHTML = "<b>DETEKTOVANE GREŠKE:</b><br>" + data.substring(2);
+            }
+        }
+
+        async function clearDTC() {
+            if(confirm("Da li ste sigurni da želite da obrišete greške i ugasite Check Engine lampicu?")) {
+                await sendCmd("04"); // Mode 04 - Clear/Reset
+                alert("Komanda poslata. Proverite tablu.");
             }
         }
 
         async function startPolling() {
-            while (true) {
-                try {
-                    await sendCmd("010C"); await sleep(200); // RPM
-                    await sendCmd("010D"); await sleep(200); // Speed
-                    await sendCmd("0105"); await sleep(200); // Coolant
-                    await sendCmd("0104"); await sleep(200); // Load
-                    await sendCmd("010F"); await sleep(200); // Intake Temp
-                    await sendCmd("ATRV"); await sleep(200); // Voltage (Direct from adapter)
-                } catch (e) { break; }
+            while (device.gatt.connected) {
+                await sendCmd("010C"); await sleep(300);
+                await sendCmd("010D"); await sleep(300);
+                await sendCmd("0105"); await sleep(300);
+                await sendCmd("ATRV"); await sleep(300);
             }
         }
 
