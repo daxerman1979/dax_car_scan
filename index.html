@@ -3,37 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DCS PRO v60 - LIVE</title>
+    <title>DCS PRO - v1</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; }
         body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Roboto', sans-serif; height: 100%; overflow: hidden; }
         
         #start-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; }
-        .logo { font-family: 'Orbitron'; font-size: 50px; font-weight: 900; letter-spacing: 10px; margin-bottom: 30px; color: var(--accent); }
+        .version-tag { position: absolute; bottom: 20px; font-family: 'Orbitron'; font-size: 12px; color: #444; letter-spacing: 2px; }
         
-        .card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 15px; width: 90%; }
-        .card-label { font-size: 12px; opacity: 0.6; text-transform: uppercase; }
-        .card-val { font-family: 'Orbitron'; font-size: 40px; color: var(--safe); }
+        .logo { font-family: 'Orbitron'; font-size: 50px; font-weight: 900; letter-spacing: 10px; margin-bottom: 10px; color: var(--accent); }
+        .subtitle { font-family: 'Orbitron'; font-size: 10px; margin-bottom: 40px; color: #666; letter-spacing: 4px; }
         
-        .btn { padding: 20px 40px; border-radius: 12px; font-family: 'Orbitron'; font-weight: 900; border: none; cursor: pointer; background: var(--accent); color: #000; width: 80%; }
-        #console { position: fixed; bottom: 10px; left: 10px; font-size: 10px; color: #444; font-family: monospace; }
-        #loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; flex-direction: column; }
+        .card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 20px; margin: 15px auto; width: 90%; max-width: 400px; }
+        .card-label { font-size: 12px; opacity: 0.6; text-transform: uppercase; margin-bottom: 5px; }
+        .card-val { font-family: 'Orbitron'; font-size: 40px; color: var(--safe); font-weight: 900; }
+        
+        .btn { padding: 20px 40px; border-radius: 12px; font-family: 'Orbitron'; font-weight: 900; border: none; cursor: pointer; background: var(--accent); color: #000; width: 80%; max-width: 320px; box-shadow: 0 0 20px rgba(0, 210, 255, 0.3); }
+        
+        #console { position: fixed; top: 10px; left: 10px; right: 10px; font-size: 9px; color: var(--accent); font-family: monospace; white-space: nowrap; overflow: hidden; opacity: 0.7; }
+        #loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; flex-direction: column; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #111; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div style="color:var(--accent); font-family:Orbitron;">KOMUNIKACIJA...</div></div>
+    <div id="console">Log: sistem spreman...</div>
 
-    <div id="start-screen">
-        <div class="logo">DCS PRO</div>
-        <button class="btn" onclick="connect()">POVEŽI VLINKER BLE</button>
-        <p style="margin-top:20px; font-size:12px; color:#555;">OSIGURAJTE DA JE BLUETOOTH UKLJUČEN</p>
+    <div id="loader">
+        <div class="spinner"></div>
+        <div id="loader-text" style="color:var(--accent); font-family:Orbitron; font-size:12px;">POVEZIVANJE...</div>
     </div>
 
-    <div style="padding: 60px 20px;">
+    <div id="start-screen">
+        <div class="logo">DCS</div>
+        <div class="subtitle">DIAGNOSTIC CONTROL SYSTEM</div>
+        <button class="btn" onclick="connect()">POVEŽI VLINKER BLE</button>
+        <div class="version-tag">VERZIJA: v1</div>
+    </div>
+
+    <div style="padding-top: 60px;">
         <div class="card">
-            <div class="card-label">Obrtaji Motora (RPM)</div>
+            <div class="card-label">Obrtaji Motora</div>
             <div><span id="rpm-val" class="card-val">0</span> <span style="font-size:14px; color:#666;">RPM</span></div>
         </div>
         <div class="card">
@@ -42,21 +54,19 @@
         </div>
     </div>
 
-    <div id="console">Log: spreman...</div>
-
     <script>
         let device, server, characteristic;
         let decoder = new TextDecoder();
         let encoder = new TextEncoder();
 
-        async function log(msg) {
-            document.getElementById('console').innerText = "Log: " + msg;
+        function log(msg) {
+            document.getElementById('console').innerText = "LOG: " + msg;
             console.log(msg);
         }
 
         async function connect() {
             try {
-                log("Tražim uređaje...");
+                log("Skeniranje...");
                 device = await navigator.bluetooth.requestDevice({
                     acceptAllDevices: true,
                     optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
@@ -64,71 +74,83 @@
 
                 document.getElementById('loader').style.display = 'flex';
                 
-                log("Povezujem se na GATT...");
+                log("GATT povezivanje...");
                 server = await device.gatt.connect();
                 
-                log("Uzimam servis...");
+                log("Servis FFE0...");
                 const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
                 
-                log("Uzimam karakteristiku...");
+                log("Karakteristika FFE1...");
                 characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
 
-                // Slušaj odgovore od vLinkera
                 await characteristic.startNotifications();
                 characteristic.addEventListener('characteristicvaluechanged', handleData);
 
-                // Inicijalizacija OBD2 protokola
-                await sendCmd("ATZ");  // Reset
-                await sleep(500);
-                await sendCmd("ATL0"); // Isključi Linefeed
-                await sleep(200);
-                await sendCmd("0100"); // Proveri podržane PID-ove (budi ECU)
+                // Inicijalizacija adaptera
+                log("Inicijalizacija...");
+                await sendCmd("ATZ");  // Resetuj adapter
+                await sleep(600);
+                await sendCmd("ATL0"); // Isključi nepotrebne razmake
+                await sleep(300);
+                await sendCmd("ATH0"); // Isključi zaglavlja (Headers)
+                await sleep(300);
+                await sendCmd("0100"); // Protokol search
 
                 document.getElementById('start-screen').style.display = 'none';
                 document.getElementById('loader').style.display = 'none';
                 
-                // Pokreni petlju čitanja
                 startPolling();
 
             } catch (e) {
                 log("GRESKA: " + e.message);
                 document.getElementById('loader').style.display = 'none';
+                alert("Greška: " + e.message);
             }
         }
 
         async function sendCmd(cmd) {
             if (!characteristic) return;
-            log("Šaljem: " + cmd);
+            // Dodajemo \r jer ELM327/vLinker komande prihvataju samo sa CR na kraju
             const data = encoder.encode(cmd + "\r");
             await characteristic.writeValue(data);
         }
 
         function handleData(event) {
-            const val = decoder.decode(event.target.value).replace(/\s+/g, '');
-            log("Odgovor: " + val);
+            let rawData = decoder.decode(event.target.value).trim();
+            // Čistimo odgovor od karaktera koji nisu hex (poput > simbola)
+            let cleanData = rawData.replace(/>/g, '').replace(/\s/g, '');
+            
+            log("DATA: " + cleanData);
 
-            // Parsiranje RPM (010C odgovara sa 410CXXXX)
-            if (val.includes("410C")) {
-                let hex = val.substring(val.indexOf("410C") + 4, val.indexOf("410C") + 8);
-                let rpm = Math.round(parseInt(hex, 16) / 4);
-                document.getElementById('rpm-val').innerText = rpm;
+            // RPM: Odgovor je obično 410CAA (gde je AA hex vrednost) ili 410CAABB
+            if (cleanData.includes("410C")) {
+                let index = cleanData.indexOf("410C") + 4;
+                let hexVal = cleanData.substring(index, index + 4);
+                if (hexVal.length === 4) {
+                    let rpm = Math.round(parseInt(hexVal, 16) / 4);
+                    document.getElementById('rpm-val').innerText = rpm;
+                }
             }
 
-            // Parsiranje Brzine (010D odgovara sa 410DXX)
-            if (val.includes("410D")) {
-                let hex = val.substring(val.indexOf("410D") + 4, val.indexOf("410D") + 6);
-                let speed = parseInt(hex, 16);
-                document.getElementById('speed-val').innerText = speed;
+            // BRZINA: Odgovor 410DXX
+            if (cleanData.includes("410D")) {
+                let index = cleanData.indexOf("410D") + 4;
+                let hexVal = cleanData.substring(index, index + 2);
+                if (hexVal.length === 2) {
+                    let speed = parseInt(hexVal, 16);
+                    document.getElementById('speed-val').innerText = speed;
+                }
             }
         }
 
         async function startPolling() {
+            // Petlja koja naizmenično traži podatke
             while (true) {
                 try {
                     await sendCmd("010C"); // Traži RPM
-                    await sleep(300);
+                    await sleep(400); 
                     await sendCmd("010D"); // Traži Brzinu
-                    await sleep(300);
+                    await sleep(400);
                 } catch (e) {
                     log("Veza prekinuta.");
                     break;
