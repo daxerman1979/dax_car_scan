@@ -3,158 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DCS PRO - v1</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>DCS PRO - v2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; }
-        body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Roboto', sans-serif; height: 100%; overflow: hidden; }
+        :root { --bg: #000; --safe: #00ff88; --danger: #ff1111; --accent: #00d2ff; --card: #0f0f0f; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Roboto', sans-serif; height: 100%; overflow-x: hidden; }
         
+        /* Start Screen */
         #start-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9000; }
-        .version-tag { position: absolute; bottom: 20px; font-family: 'Orbitron'; font-size: 12px; color: #444; letter-spacing: 2px; }
+        .logo { font-family: 'Orbitron'; font-size: 45px; font-weight: 900; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; }
+        .version-tag { position: absolute; bottom: 20px; font-family: 'Orbitron'; font-size: 10px; color: #444; }
         
-        .logo { font-family: 'Orbitron'; font-size: 50px; font-weight: 900; letter-spacing: 10px; margin-bottom: 10px; color: var(--accent); }
-        .subtitle { font-family: 'Orbitron'; font-size: 10px; margin-bottom: 40px; color: #666; letter-spacing: 4px; }
-        
-        .card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 20px; padding: 20px; margin: 15px auto; width: 90%; max-width: 400px; }
-        .card-label { font-size: 12px; opacity: 0.6; text-transform: uppercase; margin-bottom: 5px; }
-        .card-val { font-family: 'Orbitron'; font-size: 40px; color: var(--safe); font-weight: 900; }
-        
-        .btn { padding: 20px 40px; border-radius: 12px; font-family: 'Orbitron'; font-weight: 900; border: none; cursor: pointer; background: var(--accent); color: #000; width: 80%; max-width: 320px; box-shadow: 0 0 20px rgba(0, 210, 255, 0.3); }
-        
-        #console { position: fixed; top: 10px; left: 10px; right: 10px; font-size: 9px; color: var(--accent); font-family: monospace; white-space: nowrap; overflow: hidden; opacity: 0.7; }
+        /* Dashboard Grid */
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 70px 15px 20px 15px; }
+        .card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; height: 110px; }
+        .card-label { font-size: 10px; color: #666; text-transform: uppercase; font-weight: 700; }
+        .card-val { font-family: 'Orbitron'; font-size: 26px; color: var(--safe); font-weight: 900; margin-top: 5px; }
+        .card-unit { font-size: 12px; color: #444; margin-left: 4px; }
+
+        /* Status Bar */
+        .status-bar { position: fixed; top: 0; width: 100%; height: 50px; background: #080808; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; padding: 0 15px; font-family: 'Orbitron'; font-size: 10px; color: var(--accent); z-index: 1000; }
+
+        .btn { padding: 18px 30px; border-radius: 12px; font-family: 'Orbitron'; font-weight: 900; border: none; background: var(--accent); color: #000; width: 80%; cursor: pointer; }
         #loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; flex-direction: column; }
-        .spinner { width: 40px; height: 40px; border: 3px solid #111; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        .spinner { width: 30px; height: 30px; border: 3px solid #111; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="console">Log: sistem spreman...</div>
-
     <div id="loader">
         <div class="spinner"></div>
-        <div id="loader-text" style="color:var(--accent); font-family:Orbitron; font-size:12px;">POVEZIVANJE...</div>
+        <div id="loader-text" style="color:var(--accent); font-family:Orbitron; font-size:10px;">POVEZIVANJE SA ECU...</div>
     </div>
 
     <div id="start-screen">
-        <div class="logo">DCS</div>
-        <div class="subtitle">DIAGNOSTIC CONTROL SYSTEM</div>
-        <button class="btn" onclick="connect()">POVEŽI VLINKER BLE</button>
-        <div class="version-tag">VERZIJA: v1</div>
+        <div class="logo">DCS PRO</div>
+        <div style="font-family:Orbitron; font-size:10px; color:#555; margin-bottom:30px; letter-spacing:2px;">v2 - MULTI PARAMETER</div>
+        <button class="btn" onclick="connect()">POKRENI SKENIRANJE</button>
+        <div class="version-tag">STABLE BUILD v2.0.0</div>
     </div>
 
-    <div style="padding-top: 60px;">
+    <div class="status-bar">STATUS: <span id="conn-status" style="margin-left:5px; color:#fff;">ODSUTAN</span></div>
+
+    <div class="dashboard">
         <div class="card">
-            <div class="card-label">Obrtaji Motora</div>
-            <div><span id="rpm-val" class="card-val">0</span> <span style="font-size:14px; color:#666;">RPM</span></div>
+            <div class="card-label">Obrtaji (RPM)</div>
+            <div class="card-val"><span id="rpm-val">0</span><span class="card-unit">rpm</span></div>
         </div>
         <div class="card">
-            <div class="card-label">Brzina Vozila</div>
-            <div><span id="speed-val" class="card-val">0</span> <span style="font-size:14px; color:#666;">KM/H</span></div>
+            <div class="card-label">Brzina</div>
+            <div class="card-val"><span id="speed-val">0</span><span class="card-unit">km/h</span></div>
+        </div>
+        <div class="card">
+            <div class="card-label">Temp. Motora</div>
+            <div class="card-val"><span id="temp-val">--</span><span class="card-unit">°C</span></div>
+        </div>
+        <div class="card">
+            <div class="card-label">Akumulator</div>
+            <div class="card-val" style="color:var(--accent);"><span id="volt-val">--</span><span class="card-unit">V</span></div>
+        </div>
+        <div class="card">
+            <div class="card-label">Opterećenje</div>
+            <div class="card-val"><span id="load-val">--</span><span class="card-unit">%</span></div>
+        </div>
+        <div class="card">
+            <div class="card-label">Usisna Temp.</div>
+            <div class="card-val"><span id="iat-val">--</span><span class="card-unit">°C</span></div>
         </div>
     </div>
 
     <script>
-        let device, server, characteristic;
+        let device, server, char;
         let decoder = new TextDecoder();
         let encoder = new TextEncoder();
 
-        function log(msg) {
-            document.getElementById('console').innerText = "LOG: " + msg;
-            console.log(msg);
-        }
-
         async function connect() {
             try {
-                log("Skeniranje...");
                 device = await navigator.bluetooth.requestDevice({
                     acceptAllDevices: true,
                     optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
                 });
 
                 document.getElementById('loader').style.display = 'flex';
-                
-                log("GATT povezivanje...");
                 server = await device.gatt.connect();
-                
-                log("Servis FFE0...");
                 const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-                
-                log("Karakteristika FFE1...");
-                characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
+                char = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
 
-                await characteristic.startNotifications();
-                characteristic.addEventListener('characteristicvaluechanged', handleData);
+                await char.startNotifications();
+                char.addEventListener('characteristicvaluechanged', handleData);
 
-                // Inicijalizacija adaptera
-                log("Inicijalizacija...");
-                await sendCmd("ATZ");  // Resetuj adapter
-                await sleep(600);
-                await sendCmd("ATL0"); // Isključi nepotrebne razmake
-                await sleep(300);
-                await sendCmd("ATH0"); // Isključi zaglavlja (Headers)
-                await sleep(300);
-                await sendCmd("0100"); // Protokol search
+                // Setup adaptera
+                await sendCmd("ATZ"); await sleep(500);
+                await sendCmd("ATE0"); await sleep(200); // Echo off
+                await sendCmd("ATL0"); await sleep(200); // Linefeed off
+                await sendCmd("0100"); await sleep(500); // Init protocol
 
                 document.getElementById('start-screen').style.display = 'none';
                 document.getElementById('loader').style.display = 'none';
+                document.getElementById('conn-status').innerText = "POVEZAN (vLinker BLE)";
+                document.getElementById('conn-status').style.color = "var(--safe)";
                 
                 startPolling();
-
             } catch (e) {
-                log("GRESKA: " + e.message);
-                document.getElementById('loader').style.display = 'none';
                 alert("Greška: " + e.message);
+                document.getElementById('loader').style.display = 'none';
             }
         }
 
         async function sendCmd(cmd) {
-            if (!characteristic) return;
-            // Dodajemo \r jer ELM327/vLinker komande prihvataju samo sa CR na kraju
-            const data = encoder.encode(cmd + "\r");
-            await characteristic.writeValue(data);
+            if (!char) return;
+            await char.writeValue(encoder.encode(cmd + "\r"));
         }
 
         function handleData(event) {
-            let rawData = decoder.decode(event.target.value).trim();
-            // Čistimo odgovor od karaktera koji nisu hex (poput > simbola)
-            let cleanData = rawData.replace(/>/g, '').replace(/\s/g, '');
+            let data = decoder.decode(event.target.value).replace(/\s/g, '').replace(/>/g, '');
             
-            log("DATA: " + cleanData);
-
-            // RPM: Odgovor je obično 410CAA (gde je AA hex vrednost) ili 410CAABB
-            if (cleanData.includes("410C")) {
-                let index = cleanData.indexOf("410C") + 4;
-                let hexVal = cleanData.substring(index, index + 4);
-                if (hexVal.length === 4) {
-                    let rpm = Math.round(parseInt(hexVal, 16) / 4);
-                    document.getElementById('rpm-val').innerText = rpm;
-                }
+            // Parsiranje RPM
+            if (data.includes("410C")) {
+                let hex = data.substring(data.indexOf("410C")+4, data.indexOf("410C")+8);
+                document.getElementById('rpm-val').innerText = Math.round(parseInt(hex, 16) / 4);
             }
-
-            // BRZINA: Odgovor 410DXX
-            if (cleanData.includes("410D")) {
-                let index = cleanData.indexOf("410D") + 4;
-                let hexVal = cleanData.substring(index, index + 2);
-                if (hexVal.length === 2) {
-                    let speed = parseInt(hexVal, 16);
-                    document.getElementById('speed-val').innerText = speed;
-                }
+            // Parsiranje Brzine
+            if (data.includes("410D")) {
+                let hex = data.substring(data.indexOf("410D")+4, data.indexOf("410D")+6);
+                document.getElementById('speed-val').innerText = parseInt(hex, 16);
+            }
+            // Parsiranje Temperature Motora (A-40)
+            if (data.includes("4105")) {
+                let hex = data.substring(data.indexOf("4105")+4, data.indexOf("4105")+6);
+                document.getElementById('temp-val').innerText = parseInt(hex, 16) - 40;
+            }
+            // Parsiranje Opterećenja (A*100/255)
+            if (data.includes("4104")) {
+                let hex = data.substring(data.indexOf("4104")+4, data.indexOf("4104")+6);
+                document.getElementById('load-val').innerText = Math.round(parseInt(hex, 16) * 100 / 255);
+            }
+             // Parsiranje Usisne Temperature (A-40)
+             if (data.includes("410F")) {
+                let hex = data.substring(data.indexOf("410F")+4, data.indexOf("410F")+6);
+                document.getElementById('iat-val').innerText = parseInt(hex, 16) - 40;
+            }
+            // Parsiranje Napona (Adapter vraća npr 12.4V)
+            if (data.match(/\d+\.\d+V/)) {
+                document.getElementById('volt-val').innerText = data.replace(/V/g, '');
             }
         }
 
         async function startPolling() {
-            // Petlja koja naizmenično traži podatke
             while (true) {
                 try {
-                    await sendCmd("010C"); // Traži RPM
-                    await sleep(400); 
-                    await sendCmd("010D"); // Traži Brzinu
-                    await sleep(400);
-                } catch (e) {
-                    log("Veza prekinuta.");
-                    break;
-                }
+                    await sendCmd("010C"); await sleep(200); // RPM
+                    await sendCmd("010D"); await sleep(200); // Speed
+                    await sendCmd("0105"); await sleep(200); // Coolant
+                    await sendCmd("0104"); await sleep(200); // Load
+                    await sendCmd("010F"); await sleep(200); // Intake Temp
+                    await sendCmd("ATRV"); await sleep(200); // Voltage (Direct from adapter)
+                } catch (e) { break; }
             }
         }
 
