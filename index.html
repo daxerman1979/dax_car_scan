@@ -2,103 +2,110 @@
 <html lang="sr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DCS PRO v6</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCS PRO v7</title>
     <style>
-        body { background: #000; color: #00ff88; font-family: monospace; padding: 20px; margin: 0; }
-        #console { width: 100%; height: 250px; background: #050505; border: 1px solid #222; overflow-y: auto; font-size: 11px; padding: 10px; box-sizing: border-box; margin-bottom: 20px; color: #00d2ff; }
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .box { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 15px; border-radius: 8px; text-align: center; }
-        .val { font-size: 24px; display: block; color: #fff; }
-        .label { font-size: 10px; color: #666; }
-        button { width: 100%; padding: 20px; background: #00d2ff; border: none; font-weight: bold; font-size: 16px; border-radius: 12px; cursor: pointer; }
+        body { background: #000; color: #00ff88; font-family: 'Courier New', monospace; padding: 15px; }
+        #log { height: 200px; background: #050505; border: 1px solid #333; overflow-y: scroll; font-size: 10px; padding: 10px; color: #00d2ff; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .card { background: #0a0a0a; border: 1px solid #222; padding: 15px; border-radius: 10px; text-align: center; }
+        .val { font-size: 28px; color: #fff; display: block; font-weight: bold; }
+        button { width: 100%; padding: 20px; background: #ff0055; color: #fff; border: none; font-weight: bold; border-radius: 10px; }
+        .status { font-size: 10px; text-align: center; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="console">LOG: Sistem spreman. Klikni POVEŽI.</div>
+    <div class="status">UREĐAJ: <span id="st-text" style="color:red">ODSUTAN</span></div>
+    <div id="log"></div>
 
-    <div class="data-grid">
-        <div class="box"><span class="label">OBRTAJI</span><span id="rpm" class="val">0</span></div>
-        <div class="box"><span class="label">BRZINA</span><span id="speed" class="val">0</span></div>
+    <div class="grid">
+        <div class="card"><span id="rpm" class="val">0</span><span>RPM</span></div>
+        <div class="card"><span id="spd" class="val">0</span><span>KM/H</span></div>
     </div>
 
-    <p style="text-align:center; font-size:10px; color:#444;">DCS PRO v6.0 | Build 2026</p>
-    <button onclick="start()">POVEŽI vLINKER</button>
+    <br>
+    <button onclick="connect()">POKRENI V7 KONEKCIJU</button>
 
     <script>
-        let char;
-        const log = (m) => { document.getElementById('console').innerHTML += `<div>> ${m}</div>`; console.log(m); };
+        let device, char;
+        const addLog = (m) => { document.getElementById('log').innerHTML += `<div>> ${m}</div>`; document.getElementById('log').scrollTop = 9999; };
 
-        async function start() {
+        async function connect() {
             try {
-                log("Skeniranje... Odaberi vLinker BLE.");
-                const device = await navigator.bluetooth.requestDevice({
+                addLog("Iniciram skeniranje...");
+                device = await navigator.bluetooth.requestDevice({
                     acceptAllDevices: true,
-                    optionalServices: [
-                        '0000ffe0-0000-1000-8000-00805f9b34fb',
-                        '0000fff0-0000-1000-8000-00805f9b34fb'
-                    ]
+                    optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb']
                 });
 
-                log(`Povezivanje na ${device.name}...`);
+                device.addEventListener('gattserverdisconnected', () => {
+                    addLog("KONEKCIJA IZGUBLJENA! Pokušaj ponovo.");
+                    document.getElementById('st-text').innerText = "DISCONNECTED";
+                });
+
+                addLog("Povezujem se na GATT...");
                 const server = await device.gatt.connect();
                 
-                log("Tražim Primary Service...");
-                const services = await server.getPrimaryServices();
-                if(services.length === 0) throw "Nema servisa!";
-                
-                log(`Pronađeno ${services.length} servisa. Uzimam prvi...`);
-                const service = services[0];
+                addLog("Tražim servis (ffe0)...");
+                let service;
+                try {
+                    service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+                } catch(e) {
+                    addLog("ffe0 nije nađen, probam fff0...");
+                    service = await server.getPrimaryService('0000fff0-0000-1000-8000-00805f9b34fb');
+                }
 
-                log("Tražim Karakteristiku...");
-                const chars = await service.getCharacteristics();
-                char = chars.find(c => c.properties.write || c.properties.writeWithoutResponse);
-                
-                if(!char) throw "Nema write karakteristike!";
+                addLog("Tražim karakteristiku...");
+                char = await service.getCharacteristic(service.uuid.replace('0', '1'));
 
+                addLog("Aktiviram notifikacije...");
                 await char.startNotifications();
-                char.addEventListener('characteristicvaluechanged', (e) => {
-                    let d = new TextDecoder().decode(e.target.value).trim();
-                    log(`RX: ${d}`);
-                    parse(d);
-                });
+                char.addEventListener('characteristicvaluechanged', handleData);
 
-                log("Inicijalizacija: ATZ...");
+                document.getElementById('st-text').innerText = "POVEZAN";
+                document.getElementById('st-text').style.color = "#00ff88";
+
+                // KLJUČNA PAUZA: vLinker treba sekundu da se stabilizuje pre komande
+                addLog("Čekam stabilizaciju (1.5s)...");
+                await new Promise(r => setTimeout(r, 1500));
+
+                addLog("Šaljem inicijalni RESET (ATZ)...");
                 await send("ATZ");
-                await new Promise(r => setTimeout(r, 1000));
                 
-                log("Sistem spreman! Počinje čitanje.");
-                loop();
+                // Pokrećemo čitanje nakon 2 sekunde
+                setTimeout(loop, 2000);
 
             } catch (e) {
-                log(`GREŠKA: ${e.message || e}`);
+                addLog("GRESKA: " + e.message);
             }
         }
 
         async function send(c) {
-            if(!char) return;
-            await char.writeValue(new TextEncoder().encode(c + "\r"));
+            if(!char || !device.gatt.connected) return;
+            try {
+                await char.writeValue(new TextEncoder().encode(c + "\r"));
+            } catch(e) { addLog("TX Error: " + e.message); }
         }
 
-        function parse(d) {
-            let clean = d.replace(/\s/g, '').replace(/>/g, '');
-            if(clean.includes("410C")) {
-                let hex = clean.substring(clean.indexOf("410C")+4, clean.indexOf("410C")+8);
-                document.getElementById('rpm').innerText = Math.round(parseInt(hex, 16) / 4);
+        function handleData(event) {
+            let d = new TextDecoder().decode(event.target.value).replace(/\s/g, '').replace(/>/g, '');
+            if(d.includes("410C")) {
+                let h = d.substring(d.indexOf("410C")+4, d.indexOf("410C")+8);
+                document.getElementById('rpm').innerText = Math.round(parseInt(h, 16) / 4);
             }
-            if(clean.includes("410D")) {
-                let hex = clean.substring(clean.indexOf("410D")+4, clean.indexOf("410D")+6);
-                document.getElementById('speed').innerText = parseInt(hex, 16);
+            if(d.includes("410D")) {
+                let h = d.substring(d.indexOf("410D")+4, d.indexOf("410D")+6);
+                document.getElementById('spd').innerText = parseInt(h, 16);
             }
         }
 
         async function loop() {
-            while(true) {
-                await send("010C");
-                await new Promise(r => setTimeout(r, 500));
-                await send("010D");
-                await new Promise(r => setTimeout(r, 500));
+            while(device && device.gatt.connected) {
+                await send("010C"); // RPM
+                await new Promise(r => setTimeout(r, 600));
+                await send("010D"); // Brzina
+                await new Promise(r => setTimeout(r, 600));
             }
         }
     </script>
